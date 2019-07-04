@@ -1,44 +1,40 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# 编译原理
 
-## Available Scripts
+## 编译流程
 
-In the project directory, you can run:
+1. 词法分析
+2. 语法分析
+3. 语义分析
+4. 中间代码生成
+5. 代码优化
+6. 后端：目标代码生成
 
-### `npm start`
+## 知识点
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+1. 文法 语言
+2. 正规集 -> （正规式 正规文法 DNA） NFA
+3. 自顶向下：LL(1) -> 提取左公因子 消除左递归 FIRST FOLLOW SELECT 预测表
+4. 自底向上：LR(1)
+5. 运行时存储管理：活动记录 DISPLAY表
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+## DONE 编译原理 廖力
 
-### `npm test`
+快速刷完了B站廖力老师的视频 有了大体的认识
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## TODO 网易云课堂教程
 
-### `npm run build`
+[自己动手用java写编译器](https://study.163.com/provider/7600199/course.htm)
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+[编译原理动手实操,用java实现一个简易编译器1-词法解析入门](https://blog.csdn.net/tyler_download/article/details/50668983)
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+## TODO 老赵编译器
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+[自己动手开发编译器（零）序言](https://www.cnblogs.com/Ninputer/archive/2011/06/06/2073908.html)
 
-### `npm run eject`
+## TODO 编译原理 虎书
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## TODO 编译原理 龙书
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+可以结合B站哈工大的视频看
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+## TARGET 完成自己的小编译器
