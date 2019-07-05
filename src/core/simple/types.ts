@@ -8,3 +8,8 @@ export enum Token {
   NUM_OR_ID = 'NUM_OR_ID',
   UNKNOWN_SYMBOL = 'UNKNOWN_SYMBOL',
 }
+
+export interface ILexerResult {
+  token: Token;
+  symbol: string;
+}

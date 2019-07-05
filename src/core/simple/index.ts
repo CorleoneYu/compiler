@@ -1,6 +1,7 @@
 import Lexer from './lexer';
 
 export default function main() {
-  let l1 = new Lexer();
-  console.log(l1);
+  let input: string = '1 + ( 2 * 3 ) + abcd_linjiepeng_sb';
+  let lexer = new Lexer(input);
+  console.log(lexer.advance());
 }
