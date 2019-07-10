@@ -1,10 +1,9 @@
 import React, { Component } from "react";
-import {
-  BrowserRouter,
-} from "react-router-dom";
+import { BrowserRouter, NavLink, Switch, Route, Redirect } from "react-router-dom";
+import { Layout, Menu, Icon } from "antd";
+import PlusTimes from '../plus-times';
 
-import { Layout, Breadcrumb } from "antd";
-const { Header, Content } = Layout;
+const { Header, Content, Sider } = Layout;
 
 export default class extends Component {
   render() {
@@ -15,21 +14,32 @@ export default class extends Component {
             <h1 className="cwhite">编译器</h1>
           </Header>
           <Layout>
-            <Layout style={{ padding: "0 24px 24px" }}>
-              <Breadcrumb style={{ margin: "16px 0" }}>
-                <Breadcrumb.Item>Home</Breadcrumb.Item>
-                <Breadcrumb.Item>List</Breadcrumb.Item>
-                <Breadcrumb.Item>App</Breadcrumb.Item>
-              </Breadcrumb>
+            <Sider width={200} style={{ background: "#fff" }}>
+              <Menu
+                mode="inline"
+                defaultSelectedKeys={["1"]}
+                style={{ height: "100%", borderRight: 0 }}
+              >
+                <Menu.Item key="1">
+                  <NavLink to="/plus-times">
+                    <Icon type="user" />
+                    加乘编译器
+                  </NavLink>
+                </Menu.Item>
+              </Menu>
+            </Sider>
+            <Layout style={{ padding: "24px" }}>
               <Content
                 style={{
                   background: "#fff",
-                  padding: 24,
                   margin: 0,
-                  minHeight: 280
+                  minHeight: '80vh',
                 }}
               >
-                content
+                <Switch>
+                  <Route path="/plus-times" component={PlusTimes} />
+                  <Redirect from="*" to="plus-times" />
+                </Switch>
               </Content>
             </Layout>
           </Layout>

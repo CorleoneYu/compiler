@@ -13,10 +13,6 @@ export default class Lexer {
   private input: string = '';
   private currentIdx: number = 0;
   
-  constructor(input: string) {
-    this.input = trim(input);
-  }
-
   private lex(): Token {
     while (this.input[this.currentIdx] === ' ') {
       this.currentIdx++;
@@ -49,8 +45,10 @@ export default class Lexer {
     return token;
   }
 
-  advance(): ILexerResult[] {
+  advance(input: string): ILexerResult[] {
+    this.init();
     const lexerResult = [];
+    this.input = input;
 
     while(this.currentIdx < this.input.length) {
       let token = this.lex();
@@ -60,5 +58,10 @@ export default class Lexer {
       });
     }
     return lexerResult;
+  }
+
+  init() {
+    this.currentIdx = 0;
+    this.symbol = '';
   }
 }

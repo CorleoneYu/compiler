@@ -1,7 +1,7 @@
-import Lexer from './lexer';
+// import BaseParser from './baseParser';
+// import Parser from './parser';
 
 export default function main() {
-  let input: string = '1 + ( 2 * 3 ) + abcd_linjiepeng_sb';
-  let lexer = new Lexer(input);
-  console.log(lexer.advance());
+  // const parser = new Parser();
+  // console.log(parser.run('1+2;'));
 }
