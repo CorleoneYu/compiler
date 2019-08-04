@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import ReactDOM from "react-dom";
 import { Row, Col, Input, Button } from "antd";
 import Parser from "../../core/simple/parser";
 
@@ -35,11 +34,11 @@ export default class extends Component<{}, states> {
     return (
       <div>
         <Row type="flex">
-          <Col span={12} style={{ padding: '10px'}}>
-            <Input placeholder="default size" onChange={this.inputChange}/>
+          <Col span={12}>
+            <Input placeholder="记得加分号-->;" onChange={this.inputChange}/>
             <Button onClick={this.parserClick} style={{marginTop: '10px'}}>编译</Button>
           </Col>
-          <Col span={12} style={{ padding: '10px'}}>
+          <Col span={12} style={{paddingLeft: '20px', lineHeight: '200%',}}>
             {resultList.map((result, idx) => {
               return <div key={idx}>{result}</div>;
             })}

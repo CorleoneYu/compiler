@@ -1,8 +1,12 @@
 import React, { Component } from "react";
 import { BrowserRouter, NavLink, Switch, Route, Redirect } from "react-router-dom";
-import { Layout, Menu, Icon } from "antd";
-import PlusTimes from '../plus-times';
 
+/* component */
+import PlusTimes from '../plus-times';
+import MiniCompiler from '../mini-compiler';
+
+/* antd */
+import { Layout, Menu, Icon } from "antd";
 const { Header, Content, Sider } = Layout;
 
 export default class extends Component {
@@ -17,13 +21,19 @@ export default class extends Component {
             <Sider width={200} style={{ background: "#fff" }}>
               <Menu
                 mode="inline"
-                defaultSelectedKeys={["1"]}
+                defaultSelectedKeys={["2"]}
                 style={{ height: "100%", borderRight: 0 }}
               >
                 <Menu.Item key="1">
                   <NavLink to="/plus-times">
                     <Icon type="user" />
                     加乘编译器
+                  </NavLink>
+                </Menu.Item>
+                <Menu.Item key="2">
+                  <NavLink to="/mini-compiler">
+                    <Icon type="read" />
+                    简单编译器
                   </NavLink>
                 </Menu.Item>
               </Menu>
@@ -34,11 +44,13 @@ export default class extends Component {
                   background: "#fff",
                   margin: 0,
                   minHeight: '80vh',
+                  padding: '20px',
                 }}
               >
                 <Switch>
                   <Route path="/plus-times" component={PlusTimes} />
-                  <Redirect from="*" to="plus-times" />
+                  <Route path="/mini-compiler" component={MiniCompiler} />
+                  <Redirect from="*" to="mini-compiler" />
                 </Switch>
               </Content>
             </Layout>
