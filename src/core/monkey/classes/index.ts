@@ -1,6 +1,5 @@
-import { TokenType, KeyWrodMap } from '../constant';
-import { NodeType } from '../constant';
-import { func } from 'prop-types';
+import { TokenType, KeyWrodMap } from "../constant";
+import { NodeType } from "../constant";
 
 export class Token {
   private tokenType: TokenType;
@@ -86,7 +85,7 @@ export class LetStatement extends Statement {
       `this is a let statement, ` +
       `left identifier: ${this.name.getLiteral()}` +
       `right value: ${this.value.getLiteral()}`;
-    console.log(this.tokenLiteral);
+    this.nodeType = NodeType.LET_STMT;
   }
 }
 
@@ -160,7 +159,7 @@ export class Identifier extends Expression {
     this.token = props.token;
     this.name = props.name;
     this.tokenLiteral = `Identifier name is: ${this.name}`;
-    console.log(this.tokenLiteral);
+    this.nodeType = NodeType.IDENTIFIER;
   }
 }
 
@@ -271,12 +270,12 @@ export class IfExpression extends Expression {
 
 export interface IFunctionProps extends INodeProps {
   token: Token;
-  parameters: Identifier[] | ErrorExpression [];
+  parameters: Identifier[] | ErrorExpression[];
   body: BlockStatement;
 }
 export class FunctionExpression extends Expression {
   token: Token;
-  parameters: Identifier[] | ErrorExpression [];
+  parameters: Identifier[] | ErrorExpression[];
   body: BlockStatement;
   constructor(props: IFunctionProps) {
     super(props);
@@ -287,13 +286,14 @@ export class FunctionExpression extends Expression {
       `it is a nameless function: \n` +
       `parameters: ${this.parameters} \n` +
       `statements: ${this.body}`;
+    this.nodeType = NodeType.FUNCTION_LITERAL;
   }
 }
 
 export interface ICallProps extends INodeProps {
-  token: Token,
-  function: Expression,
-  arguments: Expression[],
+  token: Token;
+  function: Expression;
+  arguments: Expression[];
 }
 export class CallExpression extends Expression {
   token: Token;
@@ -304,6 +304,7 @@ export class CallExpression extends Expression {
     this.token = props.token;
     this.function = props.function as FunctionExpression;
     this.arguments = props.arguments;
+    this.nodeType = NodeType.FUNCTION_EXPRESSION;
   }
 }
 
@@ -340,9 +341,9 @@ export class IntegerNode implements IBase {
   }
 
   inspect() {
-    console.log(`integer with value ${this.value}`)
+    console.log(`integer with value ${this.value}`);
   }
-} 
+}
 
 export class BooleanNode implements IBase {
   value: Boolean;
@@ -355,9 +356,9 @@ export class BooleanNode implements IBase {
   }
 
   inspect() {
-    console.log(`boolean with value ${this.value}`)
+    console.log(`boolean with value ${this.value}`);
   }
-} 
+}
 
 export class ErrorNode implements IBase {
   value: string;
@@ -370,13 +371,13 @@ export class ErrorNode implements IBase {
   }
 
   inspect() {
-    console.log(`boolean with value ${this.value}`)
+    console.log(`boolean with value ${this.value}`);
   }
 }
 
 export class NullNode implements IBase {
   value: null = null;
- 
+
   type() {
     return NodeType.NULL;
   }
@@ -392,11 +393,84 @@ export class ReturnNode implements IBase {
     this.value = props.value;
   }
 
-  type () {
+  type() {
     return NodeType.RETURN_VALUE;
   }
 
   inspect() {
-    console.log(`return with value ${this.value}`)
+    console.log(`return with value ${this.value}`);
+  }
+}
+
+interface IFunctionNodeProps {
+  paramters: Identifier[] | ErrorExpression[];
+  blockStmt: BlockStatement;
+}
+export class FunctionNode implements IFunctionNodeProps {
+  value: any = "fn node";
+  paramters: Identifier[] | ErrorExpression[];
+  blockStmt: BlockStatement;
+  constructor(props: IFunctionNodeProps) {
+    this.paramters = props.paramters;
+    this.blockStmt = props.blockStmt;
+  }
+
+  type() {
+    return NodeType.FUNCTION_LITERAL;
+  }
+
+  inspect() {
+    console.log(`function with value ${this.value}`);
+  }
+}
+
+interface IFnCallNodeProps {
+  identifiers: Identifier[] | ErrorExpression[];
+  blockStmt: BlockStatement;
+  enviroment: Enviroment;
+}
+export class FnCallNode implements IFnCallNodeProps {
+  value: any = "fn call";
+  identifiers: Identifier[] | ErrorExpression[];
+  blockStmt: BlockStatement;
+  enviroment: Enviroment;
+  constructor(props: IFnCallNodeProps) {
+    this.identifiers = props.identifiers;
+    this.blockStmt = props.blockStmt;
+    this.enviroment = props.enviroment;
+  }
+
+  type() {
+    return NodeType.FUNCTION_CALL;
+  }
+
+  inspect() {
+    console.log(`function call`);
+  }
+}
+
+export class Enviroment {
+  valueMap: Map<string, any> = new Map();
+  outer: Enviroment | null = null;
+
+  constructor(outer: Enviroment | null) {
+    this.outer = outer;
+  }
+
+  get(key: string): any {
+    if (this.valueMap.has(key)) {
+      return this.valueMap.get(key);
+    }
+
+    if (!this.outer) {
+      throw Error(`can't finde ${key}`);
+    }
+
+    return this.outer.get(key);
+  }
+
+  set(key: string, value: any) {
+    this.valueMap.set(key, value);
+    console.log(this.valueMap);
   }
 }

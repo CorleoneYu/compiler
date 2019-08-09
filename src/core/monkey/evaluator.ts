@@ -7,6 +7,7 @@ import {
   IntegerNode,
   IntegerLiteral,
   ExpressionStatement,
+  LetStatement,
   PrefixExpression,
   InfixExpression,
   IfExpression,
@@ -15,12 +16,22 @@ import {
   ReturnNode,
   BlockStatement,
   ReturnStatement,
+  Enviroment,
+  Identifier,
+  FunctionExpression,
+  // FunctionNode,
+  FnCallNode,
+  CallExpression,
+  Expression,
 } from "./classes";
 import { NodeType } from "./constant";
 
 export default class MonkeyEvaluator {
+  env: Enviroment = new Enviroment(null);
+
   evalProgram (program: Program) {
     let result;
+    this.env = new Enviroment(null);
     for (let i = 0; i < program.statements.length; i++) {
       result = this.eval(program.statements[i]);
       console.log(result);
@@ -81,9 +92,88 @@ export default class MonkeyEvaluator {
         }
         return new ReturnNode({value: returnVal});
 
+      case NodeType.LET_STMT:
+        const identifier = (node as LetStatement).name;
+        const expression = (node as LetStatement).value;
+        const letVal = this.eval(expression);
+        if (this.isError(letVal)) {
+          return letVal;
+        }
+        this.env.set(identifier.name, letVal);
+        return letVal;
+
+      case NodeType.IDENTIFIER:
+        console.log("variable name is:" + node.tokenLiteral);
+        const identifierVal = this.evalIdentifier(node as Identifier);
+        console.log("it is binding value is " + identifierVal.value);
+        return identifierVal;
+        
+      // 解析出函数
+      case NodeType.FUNCTION_LITERAL:
+        const fnIdentifiers = (node as FunctionExpression).parameters;
+        const fnBlockStmts = (node as FunctionExpression).body;
+        return new FnCallNode({
+          identifiers: fnIdentifiers,
+          blockStmt: fnBlockStmts,
+          enviroment: new Enviroment(this.env),
+        });
+
+      // 执行函数
+      case NodeType.FUNCTION_EXPRESSION:
+        const fnCallNode = node as CallExpression;
+
+        // 获取要执行的函数
+        const fnCall = this.eval(fnCallNode.function) as FnCallNode;
+        if (this.isError(fnCall)) {
+          return fnCall;
+        }
+
+        // 解析出参数值
+        const args = this.evalExpressions(fnCallNode.arguments);
+        if (args.length && this.isError(args[0])) {
+          return args[0];
+        }
+
+        // 将函数作用域设置成当前作用域
+        const oldEnv = this.env;
+        this.env = fnCall.enviroment;
+
+        // 为要执行的函数一一赋予参数
+        for (let i = 0; i < fnCall.identifiers.length; i++) {
+          const name = (fnCall.identifiers[i] as Identifier).name;
+          const val = args[i];
+          this.env.set(name, val);
+        }
+
+        // 执行函数语句
+        const fnCallResult = this.eval(fnCall.blockStmt);
+
+        // 重置作用域
+        this.env = oldEnv;
+
+        if (fnCallResult.type() === NodeType.RETURN_VALUE) {
+          console.log("function call return with :", fnCallResult);
+          return (fnCallResult as ReturnNode).value;
+        }
+
+        return fnCallResult;
+
       default:
         return new ErrorNode({ value: `unkown nodeType ${node.nodeType}` });
     }
+  }
+
+  evalExpressions(exps: Expression[]): IBase[] {
+    const result = [];
+    for (let i = 0; i < exps.length; i++) {
+      const evaluated = this.eval(exps[i]);
+      if (this.isError(evaluated)) {
+        return [evaluated];
+      }
+      result.push(evaluated);
+    }
+
+    return result;
   }
 
   evalPrefixExpression(operator: string, right: IBase) {
@@ -199,6 +289,14 @@ export default class MonkeyEvaluator {
       }
     }
     return result;
+  }
+
+  evalIdentifier(node: Identifier) {
+    try {
+      return this.env.get(node.name);
+    } catch (err) {
+      return new ErrorNode({value:`${node.name} not found`});
+    }
   }
 
   /** helper */

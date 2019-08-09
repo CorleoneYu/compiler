@@ -335,6 +335,8 @@ export default class MonkeyParser {
   }
 
   private parseLetStatement() {
+    const letToken = this.curToken;
+
     if (!this.expectPeek(TokenType.IDENTIFIER)) {
       return null;
     }
@@ -347,21 +349,17 @@ export default class MonkeyParser {
       return null;
     }
 
-    if (!this.expectPeek(TokenType.INTEGER)) {
-      return null;
-    }
-
-    const expression = new Expression({ token: this.curToken });
-    const token = this.curToken;
+    this.nextToken()
+    const expression = this.parseExpression(PrecedenceMap.LOWEST);
 
     if (!this.expectPeek(TokenType.SEMICOLON)) {
       return null;
     }
 
     const letStmt = new LetStatement({
+      token: letToken,
       identifier,
       expression,
-      token
     });
     return letStmt;
   }
