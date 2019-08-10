@@ -1,13 +1,21 @@
 export enum TokenType {
   ILLEGAL = 'ILLEGAL',
-  EOF = 'EOF',
+  EOF = 'EOF', // 结束符
+
+  /** 标识符 */
   IDENTIFIER = 'IDENTITFIER',
+
+  /** 常数 字符串 整数 boolean */
   INTEGER = 'INTEGER',
   STRING = 'STRING',
+  ELSE = 'ELSE',
+  TRUE = 'TRUE',
 
   /** 操作符 */
   MINUS_SIGN = 'MINUS_SIGN', // -
   ASSIGN_SIGN = 'ASSIGN_SIGN', // =
+  EQ = 'EQ', // ==
+  NOT_EQ = 'NOT_EQ', // !=
   PLUS_SIGN = 'PLUS_SIGN', // +
   BANG_SIGN = 'BANG_SIGN', // !
   ASTERISK = 'ASTERISK', // *
@@ -16,24 +24,20 @@ export enum TokenType {
   GT = 'GT', // >
   
   /** 界符 */
-  SEMICOLON = 'SEMICOLON',
-  COMMA = 'COMMA',
+  SEMICOLON = 'SEMICOLON', // ;
+  COMMA = 'COMMA', // ,
   LEFT_BRACE = 'LEFT_BRACE', // {
   RIGHT_BRACE = 'RIGHT_BRACE', // }
-  EQ = 'EQ', // ==
-  NOT_EQ = 'NOT_EQ', // !=
   LEFT_PARENT = 'LEFT_PARENT', // (
   RIGHT_PARENT = 'RIGHT_PARENT', // )
   
-  /** 保留字 */
+  /** 保留字 关键字 */
   LET = 'LET',
   IF = 'IF',
-  ELSE = 'ELSE',
-  TRUE = 'TRUE',
   FALSE = 'FALSE',
   RETURN = 'RETURN',
   FN = 'FUNCTION',
-  
+  NULL = 'NULL',
 };
 
 export const KeyWrodMap: Map<string, TokenType> = new Map([
@@ -44,6 +48,7 @@ export const KeyWrodMap: Map<string, TokenType> = new Map([
   ['true', TokenType.TRUE],
   ['false', TokenType.FALSE],
   ['return', TokenType.RETURN],
+  ['null', TokenType.NULL],
 ]);
 
 export enum PrecedenceMap {

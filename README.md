@@ -35,9 +35,47 @@
 
 ## 简单编译器
 
-![语法分析](https://chenweilin.xin/blogImg/15654184225069mEWWrTT微信图片_20190810142522.png)
+### 词法分析
 
-![执行](https://chenweilin.xin/blogImg/1565418422271chfrK0kNb微信图片_20190810142006.png)  
+支持：
+
+1. 操作符： - + / * == != ! < >
+2. 界符： , ; { } ( )
+3. 保留字: let if else fn false true return
+
+### 语法分析
+
+支持：
+
+1. 表达式类型：error integer boolean string null 前缀表达式 中缀表达式 if-else表达式 fn表达式 fnCall表达式
+2. 语句类型：let语句 return语句 表达式语句 块级语句
+
+### 执行
+
+支持：
+
+1. integer操作：
+    1. 一元操作符 ! -
+    2. 二元操作符 + - * / == != > <
+2. boolean操作:
+    1. 一元操作符 !
+    2. 二元操作符 == !=
+3. string操作：
+    1. 一元操作符 !
+    2. 二元操作符 + == !=
+4. if-else 执行
+5. fn执行 支持闭包
+
+### 效果图
+
+![语法分析](https://chenweilin.xin/blogImg/1565419787205h6Gi语法分析.png)  
+
+![执行](https://chenweilin.xin/blogImg/156541978755038G执行.png)  
+
+### todo
+
+1. array object解析
+2. 内置api
 
 ## TODO 编译原理 虎书
 
