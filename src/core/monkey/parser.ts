@@ -15,7 +15,8 @@ import {
   IfExpression,
   FunctionExpression,
   IInfixParseFns,
-  CallExpression
+  CallExpression,
+  StringLiteral
 } from "./classes";
 import { TokenType, PrecedenceMap, Token2Precedence } from "./constant";
 
@@ -183,6 +184,15 @@ export default class MonkeyParser {
     });
   };
 
+  private parseStringLiteral = () => {
+    const token = this.curToken;
+    const value = token.val();
+    return new StringLiteral({
+      token,
+      value,
+    })
+  }
+
   prefixParseFns: Map<TokenType, () => Expression> = new Map([
     [TokenType.IDENTIFIER, this.parseIdentifier],
     [TokenType.INTEGER, this.parseIntegerLiteral],
@@ -192,7 +202,8 @@ export default class MonkeyParser {
     [TokenType.FALSE, this.parseBoolean],
     [TokenType.LEFT_PARENT, this.parseGroupedExpression],
     [TokenType.IF, this.parseIfExpression],
-    [TokenType.FN, this.parseFunctionLiteral]
+    [TokenType.FN, this.parseFunctionLiteral],
+    [TokenType.STRING, this.parseStringLiteral],
   ]);
 
   private parseInfixExpression = (left: Expression) => {

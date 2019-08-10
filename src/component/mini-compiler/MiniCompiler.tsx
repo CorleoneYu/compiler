@@ -14,6 +14,7 @@ import * as Styles from "./style";
 
 /** antd */
 import { Input, Button, Popover } from "antd";
+import { TokenType } from "../../core/monkey/constant";
 const { TextArea } = Input;
 
 type IState = {
@@ -78,9 +79,11 @@ export default class MiniCompiler extends Component<any, IState> {
                     });
                     return (
                       <span key={token.id} className={spanCls}>
+                        {token.type() === TokenType.STRING && `${'"'}`}
                         {!token.isIdentifier()
                           ? token.rowVal()
                           : this.renderPopover(token)}
+                        {token.type() === TokenType.STRING && `${'"'}`}
                       </span>
                     );
                   })}

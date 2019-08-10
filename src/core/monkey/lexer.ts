@@ -55,6 +55,14 @@ export default class MonkeyLexer {
     const lineCount = this.lineCount;
 
     switch (this.ch) {
+      case '"':
+        const str = this.readString();
+        if (typeof str !== 'undefined') {
+          tok = new Token(TokenType.STRING, str, lineCount, prefix);
+        } else {
+          tok = new Token(TokenType.ILLEGAL, '"', lineCount, prefix);
+        }
+        break;
       case '=':
         if (this.peekChar === '=') {
           this.readChar();
@@ -158,6 +166,21 @@ export default class MonkeyLexer {
       this.readChar();
     }
     return number;
+  }
+
+  private readString() {
+    this.readChar();
+    let str = '';
+    while (this.ch !== '"' && this.ch !== '') {
+      str += this.ch;
+      this.readChar();
+    }
+
+    if (this.ch !== '"') {
+      return undefined;
+    }
+
+    return str;
   }
 
   lexing(sourceCode: string) {

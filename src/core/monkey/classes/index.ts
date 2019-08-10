@@ -178,6 +178,21 @@ export class IntegerLiteral extends Expression {
   }
 }
 
+export interface IStringProps extends INodeProps {
+  value: string;
+}
+export class StringLiteral extends Expression {
+  token: Token;
+  value: string;
+  constructor(props: IStringProps) {
+    super(props);
+    this.token = props.token;
+    this.value = props.value;
+    this.tokenLiteral = `String value is: ${this.token.val()}`;
+    this.nodeType = NodeType.STRING;
+  }
+}
+
 export interface IPrefixProps extends INodeProps {
   operator: string;
   right: Expression;
@@ -227,7 +242,6 @@ export class InfixExpression extends Expression {
       this.operator
     }, right: ${this.right.getLiteral()})`;
     this.nodeType = NodeType.INFIX_EXPRESSION;
-    console.log(this.tokenLiteral);
   }
 }
 
@@ -387,6 +401,21 @@ export class NullNode implements IBase {
   }
 }
 
+export class StringNode implements IBase {
+  value: string;
+  constructor(props: IBaseProp) {
+    this.value = props.value;
+  }
+
+  type() {
+    return NodeType.STRING;
+  }
+
+  inspect() {
+    console.log(`string with value ${this.value}`);
+  }
+}
+
 export class ReturnNode implements IBase {
   value: any;
   constructor(props: IBaseProp) {
@@ -399,28 +428,6 @@ export class ReturnNode implements IBase {
 
   inspect() {
     console.log(`return with value ${this.value}`);
-  }
-}
-
-interface IFunctionNodeProps {
-  paramters: Identifier[] | ErrorExpression[];
-  blockStmt: BlockStatement;
-}
-export class FunctionNode implements IFunctionNodeProps {
-  value: any = "fn node";
-  paramters: Identifier[] | ErrorExpression[];
-  blockStmt: BlockStatement;
-  constructor(props: IFunctionNodeProps) {
-    this.paramters = props.paramters;
-    this.blockStmt = props.blockStmt;
-  }
-
-  type() {
-    return NodeType.FUNCTION_LITERAL;
-  }
-
-  inspect() {
-    console.log(`function with value ${this.value}`);
   }
 }
 

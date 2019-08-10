@@ -3,7 +3,8 @@ export enum TokenType {
   EOF = 'EOF',
   IDENTIFIER = 'IDENTITFIER',
   INTEGER = 'INTEGER',
-  
+  STRING = 'STRING',
+
   /** 操作符 */
   MINUS_SIGN = 'MINUS_SIGN', // -
   ASSIGN_SIGN = 'ASSIGN_SIGN', // =
@@ -71,6 +72,7 @@ export enum NodeType {
   ERROR = 'ERROR',
   INTEGER = 'INTEGER',
   BOOLEAN = 'BOOLEAN',
+  STRING = 'STRING',
   RETURN_VALUE = 'RETURN_VALUE',
   NULL = 'NULL',
   FUNCTION_LITERAL = 'FUNCTION_LITERAL',

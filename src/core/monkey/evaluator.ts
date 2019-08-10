@@ -19,17 +19,18 @@ import {
   Enviroment,
   Identifier,
   FunctionExpression,
-  // FunctionNode,
   FnCallNode,
   CallExpression,
   Expression,
+  StringNode,
+  StringLiteral
 } from "./classes";
 import { NodeType } from "./constant";
 
 export default class MonkeyEvaluator {
   env: Enviroment = new Enviroment(null);
 
-  evalProgram (program: Program) {
+  evalProgram(program: Program) {
     let result;
     this.env = new Enviroment(null);
     for (let i = 0; i < program.statements.length; i++) {
@@ -49,6 +50,9 @@ export default class MonkeyEvaluator {
 
   eval(node: Node): IBase {
     switch (node.nodeType) {
+      case NodeType.STRING:
+        return new StringNode({ value: (node as StringLiteral).value });
+
       case NodeType.INTEGER:
         return new IntegerNode({ value: (node as IntegerLiteral).value });
 
@@ -90,7 +94,7 @@ export default class MonkeyEvaluator {
         if (this.isError(returnVal)) {
           return returnVal;
         }
-        return new ReturnNode({value: returnVal});
+        return new ReturnNode({ value: returnVal });
 
       case NodeType.LET_STMT:
         const identifier = (node as LetStatement).name;
@@ -103,11 +107,9 @@ export default class MonkeyEvaluator {
         return letVal;
 
       case NodeType.IDENTIFIER:
-        console.log("variable name is:" + node.tokenLiteral);
         const identifierVal = this.evalIdentifier(node as Identifier);
-        console.log("it is binding value is " + identifierVal.value);
         return identifierVal;
-        
+
       // 解析出函数
       case NodeType.FUNCTION_LITERAL:
         const fnIdentifiers = (node as FunctionExpression).parameters;
@@ -115,7 +117,7 @@ export default class MonkeyEvaluator {
         return new FnCallNode({
           identifiers: fnIdentifiers,
           blockStmt: fnBlockStmts,
-          enviroment: new Enviroment(this.env),
+          enviroment: new Enviroment(this.env)
         });
 
       // 执行函数
@@ -218,44 +220,65 @@ export default class MonkeyEvaluator {
   }
 
   evalInfixExpression(operator: string, left: IBase, right: IBase) {
-    if (left.type () !== right.type()) {
-      return new ErrorNode({ value: `type missmatch ${left.type} and ${right.type}`});
+    if (left.type() !== right.type()) {
+      return new ErrorNode({
+        value: `type missmatch ${left.type} and ${right.type}`
+      });
     }
 
     if (left.type() === NodeType.INTEGER && right.type() === NodeType.INTEGER) {
       return this.evalIntegerInfixExpression(operator, left, right);
     }
 
-    if (operator === '==') {
-      return new BooleanNode({value: left.value === right.value});
-    } else if (operator === '!=') {
-      return new BooleanNode({value: left.value !== right.value});
+    if (left.type() === NodeType.STRING && right.type() === NodeType.STRING) {
+      return this.evalStringInfixExpression(operator, left, right);
     }
 
-    return new ErrorNode({value: `infixError: ${left.value} or ${right.value} isn't Integer`});
+    if (operator === "==") {
+      return new BooleanNode({ value: left.value === right.value });
+    } else if (operator === "!=") {
+      return new BooleanNode({ value: left.value !== right.value });
+    }
+
+    return new ErrorNode({
+      value: `infixError: ${left.value} or ${right.value} isn't Integer`
+    });
+  }
+
+  evalStringInfixExpression(operator: string, left: IBase, right: IBase) {
+    const leftVal = left.value;
+    const rightVal = right.value;
+
+    if (operator !== '+') {
+      return new ErrorNode({ value: `unknow operator for string: ${operator}`});
+    }
+    const value = leftVal + rightVal;
+    return new StringNode({
+      value
+    });
   }
 
   evalIntegerInfixExpression(operator: string, left: IBase, right: IBase) {
     const leftVal = left.value;
     const rightVal = right.value;
 
-    switch(operator) {
-      case '+':
-        return new IntegerNode({value: leftVal + rightVal});
-      case '-':
-        return new IntegerNode({value: leftVal - rightVal});
-      case '*':
-        return new IntegerNode({value: leftVal * rightVal});
-      case '/':
-        return new IntegerNode({value: leftVal / rightVal});
-      case '==':
-        return new BooleanNode({value: leftVal === rightVal});
-      case '!=':
-        return new BooleanNode({value: leftVal !== rightVal});
-      case '>':
-        return new BooleanNode({value: leftVal > rightVal});
-      case '<':
-        return new BooleanNode({value: leftVal < rightVal});  
+    switch (operator) {
+      case "+":
+        return new IntegerNode({ value: leftVal + rightVal });
+      case "-":
+        return new IntegerNode({ value: leftVal - rightVal });
+      case "*":
+        return new IntegerNode({ value: leftVal * rightVal });
+      case "/":
+        return new IntegerNode({ value: leftVal / rightVal });
+      case "==":
+        return new BooleanNode({ value: leftVal === rightVal });
+      case "!=":
+        return new BooleanNode({ value: leftVal !== rightVal });
+      case ">":
+        return new BooleanNode({ value: leftVal > rightVal });
+      case "<":
+        return new BooleanNode({ value: leftVal < rightVal });
     }
     return new ErrorNode({ value: `unkown operator ${operator}` });
   }
@@ -267,16 +290,16 @@ export default class MonkeyEvaluator {
     if (this.isError(condition)) {
       return condition;
     }
-    
+
     if (this.isTruthy(condition)) {
-      console.log("condition in if holds, exec statements in if block")
+      console.log("condition in if holds, exec statements in if block");
       return this.eval(ifNode.consequence);
     } else if (ifNode.alternative) {
       console.log("condition in if no holds, exec statements in else block");
-			return this.eval(ifNode.alternative);
+      return this.eval(ifNode.alternative);
     } else {
       console.log("condition in if no holds, exec nothing!");
-			return new NullNode();
+      return new NullNode();
     }
   }
 
@@ -284,7 +307,10 @@ export default class MonkeyEvaluator {
     let result = new NullNode();
     for (let i = 0; i < nodes.statements.length; i++) {
       result = this.eval(nodes.statements[i]);
-      if (result.type() === NodeType.RETURN_VALUE || result.type() === NodeType.ERROR) {
+      if (
+        result.type() === NodeType.RETURN_VALUE ||
+        result.type() === NodeType.ERROR
+      ) {
         return result;
       }
     }
@@ -295,7 +321,7 @@ export default class MonkeyEvaluator {
     try {
       return this.env.get(node.name);
     } catch (err) {
-      return new ErrorNode({value:`${node.name} not found`});
+      return new ErrorNode({ value: `${node.name} not found` });
     }
   }
 
