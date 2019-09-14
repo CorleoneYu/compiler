@@ -1,4 +1,4 @@
-import { TokenType, KeyWrodMap } from './constant';
+import { TokenType, KeyWordMap } from './constant';
 import { Token } from './classes';
 import { isLetter, isDigit } from './utils';
 
@@ -121,8 +121,8 @@ export default class MonkeyLexer {
       default:
         let result = this.readIdentifier();
         if (result) {
-          if (KeyWrodMap.has(result)) {
-            tok = new Token(KeyWrodMap.get(result)!, result, lineCount, prefix);
+          if (KeyWordMap.has(result)) {
+            tok = new Token(KeyWordMap.get(result)!, result, lineCount, prefix);
           } else {
             tok = new Token(TokenType.IDENTIFIER, result, lineCount, prefix);
           }

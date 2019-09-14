@@ -30,14 +30,13 @@ export default class MiniCompiler extends Component<any, IState> {
   };
 
   private parse = () => {
+    console.log('code', this.state.tokens);
     const program: Program = this.parser.parseProgram(this.state.tokens);
     console.log('program', program);
     this.evaluator.evalProgram(program);
   }
 
   private onTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    console.log("e.target.value", e.target.value);
-
     const tokens = this.lexer.lexing(e.target.value);
     this.setState({
       tokens

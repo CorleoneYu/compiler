@@ -47,8 +47,41 @@
 
 支持：
 
-1. 表达式类型：error integer boolean string null 前缀表达式 中缀表达式 if-else表达式 fn表达式 fnCall表达式
-2. 语句类型：let语句 return语句 表达式语句 块级语句
+1. 表达式类型：error integer boolean string null 前序表达式 中序表达式 fn表达式 fnCall表达式
+2. 语句类型：let声明语句 赋值语句 return语句 表达式语句 块级语句 if-else语句 while语句
+
+```javascript
+// 1. 前序表达式 boolean integer
+!true
+-3
+
+// 2. 字符串
+'hello world'
+
+// 3. 中序表达式 integer
+1 + 1
+
+// 4. let声明语句 fn表达式 fnCall表达式（函数调用）
+let add = fn(a, b) {
+    // return 语句 块级语句
+    return a + b;
+}
+add(1, 2); 
+
+// 5. if-else语句
+if (true) {
+    return 1;
+} else {
+    return 0;
+}
+
+// 6. while语句
+let a = 0;
+while(a < 5) {
+    // 赋值语句
+    a = a + 1;
+}
+```
 
 ### 执行
 
@@ -65,6 +98,8 @@
     2. 二元操作符 + == !=
 4. if-else 执行
 5. fn执行 支持闭包
+6. let 与简单赋值语句
+7. while执行
 
 ### 效果图
 

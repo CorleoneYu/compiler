@@ -1,22 +1,24 @@
 import {
   Token,
   Program,
-  Identifier,
+  IdentifierExpression,
   Expression,
   LetStatement,
   ReturnStatement,
   ExpressionStatement,
-  IntegerLiteral,
+  IntegerExpression,
   PrefixExpression,
   ErrorExpression,
   InfixExpression,
   BooleanExpression,
   BlockStatement,
-  IfExpression,
+  AssignStatement,
+  IfStatement,
+  WhileStatement,
   FunctionExpression,
   IInfixParseFns,
   CallExpression,
-  StringLiteral
+  StringExpression
 } from "./classes";
 import { TokenType, PrecedenceMap, Token2Precedence } from "./constant";
 
@@ -41,17 +43,17 @@ export default class MonkeyParser {
   private parseIdentifier = () => {
     const token = this.curToken;
     const name = token.val();
-    return new Identifier({ token, name });
+    return new IdentifierExpression({ token, name });
   };
 
-  private parseIntegerLiteral = () => {
+  private parseIntegerExpression = () => {
     const token = this.curToken;
     const value = parseInt(token.val());
     if (isNaN(value)) {
       console.error("could not parse token as integer");
     }
 
-    return new IntegerLiteral({ token, value });
+    return new IntegerExpression({ token, value });
   };
 
   private parsePrefixExpression = () => {
@@ -81,53 +83,8 @@ export default class MonkeyParser {
     return exp;
   };
 
-  private parseIfExpression = () => {
-    const token = this.curToken;
-    if (!this.expectPeek(TokenType.LEFT_PARENT)) {
-      return new ErrorExpression({
-        token,
-        error: "ifExpression-if: missing ("
-      });
-    }
-
-    this.nextToken();
-    const condition = this.parseExpression(PrecedenceMap.LOWEST);
-
-    if (!this.expectPeek(TokenType.RIGHT_PARENT)) {
-      return new ErrorExpression({
-        token,
-        error: "ifExpression-if: missing )"
-      });
-    }
-
-    if (!this.expectPeek(TokenType.LEFT_BRACE)) {
-      return new ErrorExpression({
-        token,
-        error: "ifExpression-if: missing {"
-      });
-    }
-
-    const consequence = this.parseBlockStatement();
-
-    let alternative;
-    if (this.peekTokenIs(TokenType.ELSE)) {
-      // else 部分可选
-      this.nextToken();
-      if (!this.expectPeek(TokenType.LEFT_BRACE)) {
-        return new ErrorExpression({
-          token,
-          error: "ifExpression-else: missing {"
-        });
-      }
-
-      alternative = this.parseBlockStatement();
-    }
-
-    return new IfExpression({ token, condition, consequence, alternative });
-  };
-
   private parseFunctionParameters() {
-    const parameters: Identifier[] = [];
+    const parameters: IdentifierExpression[] = [];
     // curToken -> (
     if (this.peekTokenIs(TokenType.RIGHT_PARENT)) {
       this.nextToken();
@@ -136,7 +93,7 @@ export default class MonkeyParser {
 
     this.nextToken();
     parameters.push(
-      new Identifier({ token: this.curToken, name: this.curToken.val() })
+      new IdentifierExpression({ token: this.curToken, name: this.curToken.val() })
     );
 
     while (this.peekTokenIs(TokenType.COMMA)) {
@@ -145,7 +102,7 @@ export default class MonkeyParser {
       this.nextToken();
       this.nextToken();
       parameters.push(
-        new Identifier({ token: this.curToken, name: this.curToken.val() })
+        new IdentifierExpression({ token: this.curToken, name: this.curToken.val() })
       );
     }
 
@@ -184,26 +141,25 @@ export default class MonkeyParser {
     });
   };
 
-  private parseStringLiteral = () => {
+  private parseStringExpression = () => {
     const token = this.curToken;
     const value = token.val();
-    return new StringLiteral({
+    return new StringExpression({
       token,
-      value,
-    })
-  }
+      value
+    });
+  };
 
   prefixParseFns: Map<TokenType, () => Expression> = new Map([
     [TokenType.IDENTIFIER, this.parseIdentifier],
-    [TokenType.INTEGER, this.parseIntegerLiteral],
+    [TokenType.INTEGER, this.parseIntegerExpression],
     [TokenType.BANG_SIGN, this.parsePrefixExpression],
     [TokenType.MINUS_SIGN, this.parsePrefixExpression],
     [TokenType.TRUE, this.parseBoolean],
     [TokenType.FALSE, this.parseBoolean],
     [TokenType.LEFT_PARENT, this.parseGroupedExpression],
-    [TokenType.IF, this.parseIfExpression],
     [TokenType.FN, this.parseFunctionLiteral],
-    [TokenType.STRING, this.parseStringLiteral],
+    [TokenType.STRING, this.parseStringExpression]
   ]);
 
   private parseInfixExpression = (left: Expression) => {
@@ -328,7 +284,7 @@ export default class MonkeyParser {
     }
 
     if (!this.curTokenIs(TokenType.RIGHT_BRACE)) {
-      throw new Error("parseBlockStatment: missing }");
+      throw new Error("parseBlockStatement: missing }");
     }
 
     return new BlockStatement({ token, statements });
@@ -340,9 +296,127 @@ export default class MonkeyParser {
         return this.parseLetStatement();
       case TokenType.RETURN:
         return this.parseReturnStatement();
+      case TokenType.IF:
+        return this.parseIfStatement();
+      case TokenType.WHILE:
+        return this.parseWhileStatement();
+      case TokenType.IDENTIFIER:
+        if (this.peekTokenIs(TokenType.ASSIGN_SIGN)) {
+          return this.parseAssignStatement();
+        }
+        return this.parseExpressionStatement();
       default:
         return this.parseExpressionStatement();
     }
+  }
+
+  private parseAssignStatement() {
+    const identifier = new IdentifierExpression({
+      token: this.curToken,
+      name: this.curToken.val()
+    });
+
+    this.nextToken();
+    const assignToken = this.curToken;
+
+    this.nextToken();
+    const expression = this.parseExpression(PrecedenceMap.LOWEST);
+
+    if (!this.expectPeek(TokenType.SEMICOLON)) {
+      return null;
+    }
+
+    const AssignStmt = new AssignStatement({
+      identifier,
+      value: expression,
+      token: assignToken,
+    });
+    return AssignStmt;
+  }
+
+  private parseWhileStatement() {
+    const token = this.curToken;
+    if (!this.expectPeek(TokenType.LEFT_PARENT)) {
+      // error: WhileStatement: missing (
+      return null;
+    }
+
+    this.nextToken();
+    const condition = this.parseExpression(PrecedenceMap.LOWEST);
+
+    if (!this.expectPeek(TokenType.RIGHT_PARENT)) {
+      // error: WhileStatement: missing )
+      return null;
+    }
+
+    if (!this.expectPeek(TokenType.LEFT_BRACE)) {
+      // error: "WhileStatement: missing {"
+      return null;
+    }
+
+    const body = this.parseBlockStatement();
+
+    const whileStmt: WhileStatement = new WhileStatement({
+      token,
+      body,
+      condition,
+    });
+    return whileStmt;
+  }
+
+  private parseIfStatement() {
+    const token = this.curToken;
+    if (!this.expectPeek(TokenType.LEFT_PARENT)) {
+      // return new ErrorExpression({
+      //   token,
+      //   error: "IfStatement-if: missing ("
+      // });
+      return null;
+    }
+
+    this.nextToken();
+    const condition = this.parseExpression(PrecedenceMap.LOWEST);
+
+    if (!this.expectPeek(TokenType.RIGHT_PARENT)) {
+      // return new ErrorExpression({
+      //   token,
+      //   error: "IfStatement-if: missing )"
+      // });
+      return null;
+    }
+
+    if (!this.expectPeek(TokenType.LEFT_BRACE)) {
+      // return new ErrorExpression({
+      //   token,
+      //   error: "IfStatement-if: missing {"
+      // });
+      return null;
+    }
+
+    const consequence = this.parseBlockStatement();
+
+    let alternative;
+    if (this.peekTokenIs(TokenType.ELSE)) {
+      // else 部分可选
+      this.nextToken();
+      if (!this.expectPeek(TokenType.LEFT_BRACE)) {
+        // return new ErrorExpression({
+        //   token,
+        //   error: "IfStatement-else: missing {"
+        // });
+        return null;
+      }
+
+      alternative = this.parseBlockStatement();
+    }
+
+    const ifStmt: IfStatement = new IfStatement({
+      token,
+      condition,
+      consequence,
+      alternative
+    });
+    return ifStmt;
   }
 
   private parseLetStatement() {
@@ -351,7 +425,7 @@ export default class MonkeyParser {
     if (!this.expectPeek(TokenType.IDENTIFIER)) {
       return null;
     }
-    const identifier = new Identifier({
+    const identifier = new IdentifierExpression({
       token: this.curToken,
       name: this.curToken.val()
     });
@@ -360,7 +434,7 @@ export default class MonkeyParser {
       return null;
     }
 
-    this.nextToken()
+    this.nextToken();
     const expression = this.parseExpression(PrecedenceMap.LOWEST);
 
     if (!this.expectPeek(TokenType.SEMICOLON)) {
@@ -370,7 +444,7 @@ export default class MonkeyParser {
     const letStmt = new LetStatement({
       token: letToken,
       identifier,
-      expression,
+      expression
     });
     return letStmt;
   }
@@ -413,7 +487,10 @@ export default class MonkeyParser {
     }
 
     let left = prefix();
-    while(!this.peekTokenIs(TokenType.SEMICOLON) && precedence < this.peekPrecedence()) {
+    while (
+      !this.peekTokenIs(TokenType.SEMICOLON) &&
+      precedence < this.peekPrecedence()
+    ) {
       const infix: undefined | IInfixParseFns = this.infixParseFns.get(
         this.peekToken.type()
       );
@@ -423,7 +500,7 @@ export default class MonkeyParser {
 
       this.nextToken();
       left = infix(left);
-    } 
+    }
     return left;
   }
 
@@ -459,4 +536,3 @@ export default class MonkeyParser {
     return precedence;
   }
 }
-

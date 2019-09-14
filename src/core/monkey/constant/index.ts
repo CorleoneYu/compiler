@@ -38,11 +38,15 @@ export enum TokenType {
   RETURN = 'RETURN',
   FN = 'FUNCTION',
   NULL = 'NULL',
+  FOR = 'FOR',
+  WHILE = 'WHILE',
 };
 
-export const KeyWrodMap: Map<string, TokenType> = new Map([
+export const KeyWordMap: Map<string, TokenType> = new Map([
   ['let', TokenType.LET],
   ['if', TokenType.IF],
+  ['for', TokenType.FOR],
+  ['while', TokenType.WHILE],
   ['else', TokenType.ELSE],
   ['fn', TokenType.FN],
   ['true', TokenType.TRUE],
@@ -72,24 +76,3 @@ export const Token2Precedence: Map<TokenType, PrecedenceMap> = new Map([
  [TokenType.ASTERISK, PrecedenceMap.PRODUCT],
  [TokenType.LEFT_PARENT, PrecedenceMap.CALL],
 ]);
-
-export enum NodeType {
-  ERROR = 'ERROR',
-  INTEGER = 'INTEGER',
-  BOOLEAN = 'BOOLEAN',
-  STRING = 'STRING',
-  RETURN_VALUE = 'RETURN_VALUE',
-  NULL = 'NULL',
-  FUNCTION_LITERAL = 'FUNCTION_LITERAL',
-  FUNCTION_CALL = 'FUNCTION_CALL',
-
-  FUNCTION_EXPRESSION = 'FUNCTION_EXPRESSION',
-  EXPRESSION_STATEMENT = 'EXPRESSION_STATEMENT',
-  PREFIX_EXPRESSION = 'PREFIX_EXPRESSION',
-  INFIX_EXPRESSION = 'INFIX_EXPRESSION',
-  IF_EXPRESSION = 'IF_EXPRESSION',
-  BLOCK_STMT = 'BLOCK_STMT',
-  RETURN_STMT = 'RETURN_STMT',
-  LET_STMT = 'LET_STMT',
-  IDENTIFIER = 'IDENTIFIER',
-}
