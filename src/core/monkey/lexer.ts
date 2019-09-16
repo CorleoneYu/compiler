@@ -1,4 +1,4 @@
-import { TokenType, KeyWordMap } from './constant';
+import { TokenType, KeyWordMap, EOF } from './constant';
 import { Token } from './classes';
 import { isLetter, isDigit } from './utils';
 
@@ -24,7 +24,7 @@ export default class MonkeyLexer {
 
   private readChar(): string {
     if (this.readPosition >= this.sourceCode.length) {
-      this.ch = '';
+      this.ch = EOF;
     } else {
       this.ch = this.sourceCode[this.readPosition];
     }
@@ -35,11 +35,12 @@ export default class MonkeyLexer {
 
   private skipWhiteSpaceAndNewLine() {
     let prefix = '';
-    while (this.ch === ' ' || this.ch === '\t' || this.ch === '\n') {
+    while (this.ch === ' ' || this.ch === '\n') {
       if (this.ch === ' ') {
         prefix += ' ';
       }
-      if (this.ch === '\t' || this.ch === '\n') {
+
+      if (this.ch === '\n') {
         this.lineCount++;
         prefix = '';
       }
@@ -115,7 +116,7 @@ export default class MonkeyLexer {
       case ')':
         tok = new Token(TokenType.RIGHT_PARENT, ')', lineCount, prefix);
         break;
-      case '':
+      case EOF:
         tok = new Token(TokenType.EOF, '', lineCount, prefix);
         break;
       default:
@@ -193,7 +194,6 @@ export default class MonkeyLexer {
     let token = this.nextToken();
  
     while (token && token.type() !== TokenType.EOF) {
-      // console.log(token);
       if (!tokens[this.lineCount]) {
         tokens[this.lineCount] = [];
       }
@@ -202,9 +202,21 @@ export default class MonkeyLexer {
       token = this.nextToken();
     }
 
-    tokens.push([token!]);
-    console.log('tokens', tokens);
+    if (tokens.length) {
+      tokens[tokens.length-1].push(token!);
+    }
+
+    this.completionLineTokens(tokens);
+    // console.log('tokens', tokens);
     return tokens;
+  }
+
+  private completionLineTokens(tokens: Token[][]) {
+    for (let i = 0; i < tokens.length; i++) {
+      if (!tokens[i]) {
+        tokens[i] = [];
+      }
+    }
   }
 
   // todo diff 找出本次输入与上次输入 变化的行

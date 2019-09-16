@@ -25,10 +25,12 @@ export interface INodeProps {
 }
 
 export class Node {
+  token: Token;
   tokenLiteral = "";
   nodeType: NodeType = NodeType.ERROR_EXP;
   constructor(props: INodeProps) {
     this.tokenLiteral = props.token.val();
+    this.token = props.token;
   }
   getLiteral() {
     return this.tokenLiteral;

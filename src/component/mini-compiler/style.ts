@@ -1,25 +1,52 @@
-import styled from 'styled-components';
+import styled from "styled-components";
+const marginLeft = 40;
+const linePadding = 11;
 
-export const Container = styled.div`
+export const CompilerBox = styled.div`
   position: relative;
 
-  .container__div {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 4px 11px;
-    line-height: 1.5;
+  .compiler__container {
+    position: relative;
+    margin-left: ${marginLeft}px;
 
-    .key-word {
-      color: red;
+    .container__div {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 4px ${linePadding}px;
+      line-height: 1.5;
+
+      .line {
+        position: relative;
+
+        .key-word {
+          color: red;
+        }
+
+        .line__point {
+          position: absolute;
+          left: ${-marginLeft - linePadding}px;
+          width: ${marginLeft}px;
+          text-align: center;
+        }
+      }
+
+      .current-line {
+        background: red;
+      }
+    }
+
+    .container__input {
+      background: transparent;
+      color: transparent;
+      /* color: red; */
+      caret-color: black;
     }
   }
 
-  .container__input {
-    background: transparent;
-    color: transparent;
-    caret-color: black;
+  .compiler__btn {
+    margin-top: 10px;
   }
-`
+`;

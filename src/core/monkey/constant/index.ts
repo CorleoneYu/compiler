@@ -1,3 +1,4 @@
+export const EOF = '';
 export enum TokenType {
   ILLEGAL = 'ILLEGAL',
   EOF = 'EOF', // 结束符

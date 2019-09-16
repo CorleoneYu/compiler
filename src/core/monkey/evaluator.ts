@@ -41,7 +41,6 @@ export default class MonkeyEvaluator {
     this.env = new Environment(null);
     for (let i = 0; i < program.statements.length; i++) {
       result = this.eval(program.statements[i]);
-      console.log('evalProgram', result);
 
       if (result.type() === BaseType.RETURN_VALUE) {
         return result.value;

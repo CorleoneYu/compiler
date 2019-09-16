@@ -6,8 +6,8 @@ import { Token, Program } from "../../core/monkey/classes";
 
 /** helper */
 import MonkeyLexer from "../../core/monkey/lexer";
-import MonkeyParser from '../../core/monkey/parser';
-import MonkeyEvaluator from '../../core/monkey/evaluator';
+import MonkeyParser from "../../core/monkey/parser";
+import MonkeyEvaluator from "../../core/monkey/evaluator";
 
 /** styles */
 import * as Styles from "./style";
@@ -19,6 +19,7 @@ const { TextArea } = Input;
 
 type IState = {
   tokens: Token[][];
+  currentLine: number;
 };
 
 export default class MiniCompiler extends Component<any, IState> {
@@ -26,22 +27,58 @@ export default class MiniCompiler extends Component<any, IState> {
   private parser: MonkeyParser = new MonkeyParser();
   private evaluator: MonkeyEvaluator = new MonkeyEvaluator();
   state = {
-    tokens: []
+    tokens: [],
+    currentLine: -1,
   };
 
-  private parse = () => {
-    console.log('code', this.state.tokens);
+  private parse = (e: React.MouseEvent<Element>) => {
+    // const btnElm = document.querySelector("[data-selector=button]");
+    // btnElm!.setAttribute('style', 'left: 1000px; bottom: 1000px;' );
+    console.log("token", this.state.tokens);
     const program: Program = this.parser.parseProgram(this.state.tokens);
-    console.log('program', program);
+    console.log("program", program);
     this.evaluator.evalProgram(program);
-  }
+  };
 
   private onTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    console.log("onTextChange", e.target.value);
     const tokens = this.lexer.lexing(e.target.value);
     this.setState({
-      tokens
+      tokens,
+      currentLine: -1,
     });
   };
+
+  private onTextKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const keyCode = e.keyCode;
+    const CHAR_CODE = 9;
+    if (keyCode === CHAR_CODE) {
+      e.currentTarget.value += '    ';
+      e.preventDefault();
+    }
+  }
+
+  private renderLineContent(lineToken: Token[]) {
+    if (!lineToken.length) {
+      return <div className="token empty-token">&nbsp;</div>
+    }
+
+    return lineToken.map((token: Token) => {
+      const spanCls = classnames({
+        token: true,
+        "key-word": token.isKeyWorld(),
+      });
+      return (
+        <span key={token.id} className={spanCls}>
+          {token.type() === TokenType.STRING && `${'"'}`}
+          {!token.isIdentifier()
+            ? token.rowVal().replace(/ /g, "\u00a0")
+            : this.renderPopover(token)}
+          {token.type() === TokenType.STRING && `${'"'}`}
+        </span>
+      );
+    });
+  }
 
   private renderPopover(token: Token) {
     const content = (
@@ -53,39 +90,32 @@ export default class MiniCompiler extends Component<any, IState> {
     );
     return (
       <Popover placement="right" title="syntax" content={content}>
-        {token.rowVal()}
+        {token.rowVal().replace(/ /g, "\u00a0")}
       </Popover>
     );
   }
 
   render() {
-    const { tokens } = this.state;
+    const { tokens, currentLine } = this.state;
 
     return (
-      <div>
-        <Styles.Container>
+      <Styles.CompilerBox>
+        <div className="compiler__container">
           <div className="container__div">
-            {tokens.map((lineTokens: Token[], lineNumber) => {
+            {tokens.map((lineToken: Token[], lineNumber) => {
+              const lineCls = classnames({
+                'line': true,
+                'current-line': lineNumber === currentLine,
+              });
               return (
                 <div
                   key={`line-${lineNumber + 1}`}
-                  className={`line-${lineNumber + 1}`}
+                  className={lineCls}
                 >
-                  {lineTokens.map((token: Token) => {
-                    const spanCls = classnames({
-                      token: true,
-                      "key-word": token.isKeyWorld()
-                    });
-                    return (
-                      <span key={token.id} className={spanCls}>
-                        {token.type() === TokenType.STRING && `${'"'}`}
-                        {!token.isIdentifier()
-                          ? token.rowVal()
-                          : this.renderPopover(token)}
-                        {token.type() === TokenType.STRING && `${'"'}`}
-                      </span>
-                    );
-                  })}
+                  <div className="line__point">{lineNumber + 1}</div>
+                  <div className="line__content">
+                    {this.renderLineContent(lineToken)}
+                  </div>
                 </div>
               );
             })}
@@ -93,14 +123,18 @@ export default class MiniCompiler extends Component<any, IState> {
           <TextArea
             className="container__input"
             onChange={this.onTextChange}
+            onKeyDown={this.onTextKeyDown}
             autosize={{ minRows: 20 }}
           />
-        </Styles.Container>
-        <Button type="primary" style={{ marginTop: "20px" }}
-          onClick={this.parse}>
+        </div>
+        <Button
+          type="primary"
+          className="compiler__btn"
+          onClick={this.parse}
+        >
           编译
         </Button>
-      </div>
+      </Styles.CompilerBox>
     );
   }
 }
