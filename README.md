@@ -107,6 +107,18 @@ while(a < 5) {
 
 ![执行](https://chenweilin.xin/blogImg/156541978755038G执行.png)  
 
+### 与编程游戏结合
+
+难点：
+
+1. 旋转
+2. 任务调度中心
+
+预期功能：
+
+1. service work
+2. 当前执行行提示
+
 ### todo
 
 1. array object解析

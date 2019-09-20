@@ -54,6 +54,10 @@ export const KeyWordMap: Map<string, TokenType> = new Map([
   ['false', TokenType.FALSE],
   ['return', TokenType.RETURN],
   ['null', TokenType.NULL],
+  ['console', TokenType.IDENTIFIER],
+  ['move', TokenType.IDENTIFIER],
+  ['turnLeft', TokenType.IDENTIFIER],
+  ['turnRight', TokenType.IDENTIFIER],
 ]);
 
 export enum PrecedenceMap {

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import classnames from "classnames";
 
 /** types */
-import { Token, Program } from "../../core/monkey/classes";
+import { Token, Program } from "../../core/monkey/typings";
 
 /** helper */
 import MonkeyLexer from "../../core/monkey/lexer";
@@ -22,13 +22,13 @@ type IState = {
   currentLine: number;
 };
 
-export default class MiniCompiler extends Component<any, IState> {
+export default class MiniCompiler extends Component<{}, IState> {
   private lexer: MonkeyLexer = new MonkeyLexer();
   private parser: MonkeyParser = new MonkeyParser();
   private evaluator: MonkeyEvaluator = new MonkeyEvaluator();
   state = {
     tokens: [],
-    currentLine: -1,
+    currentLine: -1
   };
 
   private parse = (e: React.MouseEvent<Element>) => {
@@ -45,7 +45,7 @@ export default class MiniCompiler extends Component<any, IState> {
     const tokens = this.lexer.lexing(e.target.value);
     this.setState({
       tokens,
-      currentLine: -1,
+      currentLine: -1
     });
   };
 
@@ -53,20 +53,20 @@ export default class MiniCompiler extends Component<any, IState> {
     const keyCode = e.keyCode;
     const CHAR_CODE = 9;
     if (keyCode === CHAR_CODE) {
-      e.currentTarget.value += '    ';
+      e.currentTarget.value += "    ";
       e.preventDefault();
     }
-  }
+  };
 
   private renderLineContent(lineToken: Token[]) {
     if (!lineToken.length) {
-      return <div className="token empty-token">&nbsp;</div>
+      return <div className="token empty-token">&nbsp;</div>;
     }
 
     return lineToken.map((token: Token) => {
       const spanCls = classnames({
         token: true,
-        "key-word": token.isKeyWorld(),
+        "key-word": token.isKeyWorld()
       });
       return (
         <span key={token.id} className={spanCls}>
@@ -104,14 +104,11 @@ export default class MiniCompiler extends Component<any, IState> {
           <div className="container__div">
             {tokens.map((lineToken: Token[], lineNumber) => {
               const lineCls = classnames({
-                'line': true,
-                'current-line': lineNumber === currentLine,
+                line: true,
+                "current-line": lineNumber === currentLine
               });
               return (
-                <div
-                  key={`line-${lineNumber + 1}`}
-                  className={lineCls}
-                >
+                <div key={`line-${lineNumber + 1}`} className={lineCls}>
                   <div className="line__point">{lineNumber + 1}</div>
                   <div className="line__content">
                     {this.renderLineContent(lineToken)}
@@ -124,16 +121,13 @@ export default class MiniCompiler extends Component<any, IState> {
             className="container__input"
             onChange={this.onTextChange}
             onKeyDown={this.onTextKeyDown}
-            autosize={{ minRows: 20 }}
           />
         </div>
-        <Button
-          type="primary"
-          className="compiler__btn"
-          onClick={this.parse}
-        >
-          编译
-        </Button>
+        <div className="compiler__btn-group">
+          <Button type="primary" onClick={this.parse} style={{ marginLeft: '40px'}}>
+            编译
+          </Button>
+        </div>
       </Styles.CompilerBox>
     );
   }

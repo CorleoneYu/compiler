@@ -1,5 +1,5 @@
 import { TokenType, KeyWordMap, EOF } from './constant';
-import { Token } from './classes';
+import { Token } from './typings';
 import { isLetter, isDigit } from './utils';
 
 export default class MonkeyLexer {
@@ -135,7 +135,7 @@ export default class MonkeyLexer {
         }
 
         if (!result) {
-          tok = new Token(TokenType.ILLEGAL, 'illegal', lineCount, prefix);
+          tok = new Token(TokenType.ILLEGAL, this.ch, lineCount, prefix);
         } else {
           // readIdentifier | readNumber 成功 
           // 因为在这两个方法最后都会执行readChar 

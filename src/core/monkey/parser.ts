@@ -19,7 +19,7 @@ import {
   IInfixParseFns,
   CallExpression,
   StringExpression
-} from "./classes";
+} from "./typings";
 import { TokenType, PrecedenceMap, Token2Precedence } from "./constant";
 
 export default class MonkeyParser {

@@ -30,8 +30,9 @@ import {
   StringNode,
   StringExpression,
   NodeType,
-} from "./classes";
-import builtinsFns from './builtins';
+} from "./typings";
+import { EVENTS, eventEmitter } from '../../constant';
+import { implementFns } from '../../constant';
 
 export default class MonkeyEvaluator {
   env: Environment = new Environment(null);
@@ -42,14 +43,12 @@ export default class MonkeyEvaluator {
     for (let i = 0; i < program.statements.length; i++) {
       result = this.eval(program.statements[i]);
 
-      if (result.type() === BaseType.RETURN_VALUE) {
-        return result.value;
-      }
-
-      if (result.type() === BaseType.ERROR) {
-        return result;
+      if (result.type() === BaseType.RETURN_VALUE || result.type() === BaseType.ERROR) {
+        break;
       }
     }
+
+    eventEmitter.emit(EVENTS.FINISH);
     return result;
   }
 
@@ -140,8 +139,8 @@ export default class MonkeyEvaluator {
 
     // 获取要执行的函数
     const fnName = fnCallNode.function.name;
-    if (builtinsFns.has(fnName)) {
-      const fn = builtinsFns.get(fnName);
+    if (implementFns.has(fnName)) {
+      const fn = implementFns.get(fnName);
       fn!(args);
       return new NullNode();
     }
