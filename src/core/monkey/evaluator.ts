@@ -141,7 +141,7 @@ export default class MonkeyEvaluator {
     const fnName = fnCallNode.function.name;
     if (implementFns.has(fnName)) {
       const fn = implementFns.get(fnName);
-      fn!(args);
+      fn!([fnCallNode.token.line(), ...args]);
       return new NullNode();
     }
 

@@ -13,22 +13,26 @@ import MonkeyEvaluator from "../../core/monkey/evaluator";
 import * as Styles from "./style";
 
 /** antd */
-import { Input, Button, Popover } from "antd";
+import { Input, Button, Popover, Drawer } from "antd";
 import { TokenType } from "../../core/monkey/constant";
 const { TextArea } = Input;
 
+type IProps = {
+  currentLine: number;
+  reset: () => void;
+}
 type IState = {
   tokens: Token[][];
-  currentLine: number;
+  drawerVisible: boolean;
 };
 
-export default class MiniCompiler extends Component<{}, IState> {
+export default class MiniCompiler extends Component<IProps, IState> {
   private lexer: MonkeyLexer = new MonkeyLexer();
   private parser: MonkeyParser = new MonkeyParser();
   private evaluator: MonkeyEvaluator = new MonkeyEvaluator();
   state = {
     tokens: [],
-    currentLine: -1
+    drawerVisible: false,
   };
 
   private parse = (e: React.MouseEvent<Element>) => {
@@ -45,7 +49,6 @@ export default class MiniCompiler extends Component<{}, IState> {
     const tokens = this.lexer.lexing(e.target.value);
     this.setState({
       tokens,
-      currentLine: -1
     });
   };
 
@@ -95,9 +98,21 @@ export default class MiniCompiler extends Component<{}, IState> {
     );
   }
 
-  render() {
-    const { tokens, currentLine } = this.state;
+  private openDrawer = () => {
+    this.setState({
+      drawerVisible: true,
+    })
+  }
 
+  private onCloseDrawer = () => {
+    this.setState({
+      drawerVisible: false,
+    });
+  };
+
+  render() {
+    const { tokens, drawerVisible } = this.state;
+    const { currentLine, reset } = this.props;
     return (
       <Styles.CompilerBox>
         <div className="compiler__container">
@@ -124,10 +139,27 @@ export default class MiniCompiler extends Component<{}, IState> {
           />
         </div>
         <div className="compiler__btn-group">
-          <Button type="primary" onClick={this.parse} style={{ marginLeft: '40px'}}>
+          <Button type="primary" onClick={this.parse}>
             编译
           </Button>
+          <Button type="danger" onClick={reset}>
+            重置
+          </Button>
+          <Button onClick={this.openDrawer}>
+            帮助
+          </Button>
         </div>
+        <Drawer
+          title="API Helper"
+          placement="right"
+          closable={false}
+          onClose={this.onCloseDrawer}
+          visible={drawerVisible}
+        >
+          <p>move</p>
+          <p>turnLeft</p>
+          <p>turnRight</p>
+        </Drawer>
       </Styles.CompilerBox>
     );
   }

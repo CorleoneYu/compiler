@@ -50,6 +50,7 @@ export interface IGameConfigProps {
   steelsConfig?: ILocation[];
   name?: string;
   size: ISize;
+  guideText: string;
 }
 export class GameConfig {
   level: number;
@@ -59,9 +60,10 @@ export class GameConfig {
   steelsConfig: ILocation[];
   gameMap: ImgType[][][] = [];
   size: ISize;
+  guideText: string;
 
   constructor(props: IGameConfigProps) {
-    const { level, tankConfig = defaultTankUI, targetConfig = defaultLocation, steelsConfig = [], size } = props;
+    const { level, tankConfig = defaultTankUI, targetConfig = defaultLocation, steelsConfig = [], size, guideText } = props;
     const { name = `第${level}关` } = props;
     this.level = level;
     this.name = name;
@@ -69,6 +71,7 @@ export class GameConfig {
     this.targetConfig = targetConfig;
     this.steelsConfig = steelsConfig;
     this.size = size;
+    this.guideText = guideText;
     console.log('constructor gameConfig', this);
     this.initGameMap();
   }
@@ -120,4 +123,5 @@ export const defaultLevel = -1;
 export const defaultGameConfig: GameConfig = new GameConfig({
   level: defaultLevel,
   size: defaultSize,
+  guideText: 'welcome to my game',
 });

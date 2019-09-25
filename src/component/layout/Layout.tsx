@@ -12,7 +12,7 @@ import PlusTimes from "../plus-times";
 import Game from "../game";
 
 /* antd */
-import { Layout, Menu, Icon } from "antd";
+import { Layout, Menu } from "antd";
 const { Header, Content, Sider } = Layout;
 
 export default class extends Component {
@@ -30,17 +30,16 @@ export default class extends Component {
                 defaultSelectedKeys={["game-link-0"]}
                 style={{ height: "100%", borderRight: 0 }}
               >
-                <Menu.Item key="1">
+                {/* <Menu.Item key="1">
                   <NavLink to="/plus-times">
                     <Icon type="user" />
                     加乘编译器
                   </NavLink>
-                </Menu.Item>
+                </Menu.Item> */}
                 {config.map(item => {
                   return (
                     <Menu.Item key={`game-link-${item.level}`}>
                       <NavLink to={`/mini-compiler/${item.level}`}>
-                        <Icon type="read" />
                         {item.name}
                       </NavLink>
                     </Menu.Item>
@@ -53,7 +52,7 @@ export default class extends Component {
                 style={{
                   background: "#fff",
                   margin: 0,
-                  minHeight: "80vh",
+                  height: "80vh",
                   padding: "20px"
                 }}
               >

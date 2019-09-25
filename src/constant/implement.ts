@@ -1,28 +1,25 @@
 import { eventEmitter, EVENTS } from './event';
 import { IImplementFn } from '../typings';
 
-const consoleFn: IImplementFn = (...args) => {
-  console.log('console', ...args);
-}
-
 const moveFn: IImplementFn = (args) => {
-  console.log('moveFn before', args[0].value);
-  eventEmitter.emit(EVENTS.MOVE, args[0].value);
-  console.log('moveFn after');
+  const line = args.shift();
+  console.log('move', line, args);
+  eventEmitter.emit(EVENTS.MOVE, line, args[0].value);
 }
 
-const turnLeftFn: IImplementFn = () => {
-  console.log('turnLeft');
-  eventEmitter.emit(EVENTS.TURN_LEFT);
+const turnLeftFn: IImplementFn = (args) => {
+  const line = args.shift();
+  console.log('turnLeft', line);
+  eventEmitter.emit(EVENTS.TURN_LEFT, line, true);
 }
 
-const turnRightFn: IImplementFn = () => {
-  console.log('turnRight');
-  eventEmitter.emit(EVENTS.TURN_RIGHT);
+const turnRightFn: IImplementFn = (args) => {
+  const line = args.shift();
+  console.log('turnRight', line);
+  eventEmitter.emit(EVENTS.TURN_RIGHT, line, false);
 }
 
 export const implementFns: Map<string, IImplementFn> =  new Map([
-  ['console', consoleFn],
   ['move', moveFn],
   ['turnLeft', turnLeftFn],
   ['turnRight', turnRightFn],

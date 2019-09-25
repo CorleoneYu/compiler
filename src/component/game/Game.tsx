@@ -3,7 +3,7 @@ import { cloneDeep } from "lodash-es";
 
 import MiniCompiler from '../mini-compiler';
 import GameUI from '../game-ui';
-import { Modal } from 'antd'
+import { Modal, notification } from 'antd'
 
 import { config, eventEmitter, EVENTS } from "../../constant";
 import { GameConfig, defaultGameConfig, Tank, ITankUI, } from '../../typings';
@@ -15,12 +15,19 @@ type IGameProps = {
 };
 
 interface IGameState {
+  currentLine: number;
   gameConfig: GameConfig;
   tank: Tank;
 }
 
-export interface IFn {
-  (): any;
+interface IFn {
+  (args: any): any;
+}
+
+interface IFnAndParams {
+  fn: IFn,
+  params: any,
+  currentLine: number,
 }
 
 function sleep(ms: number) {
@@ -32,6 +39,7 @@ function sleep(ms: number) {
   });
 }
 
+const NO_RUN_LINE = -1;
 export default class Game extends Component<
   RouteComponentProps<IGameProps>,
   IGameState
@@ -39,8 +47,9 @@ export default class Game extends Component<
   state = {
     gameConfig: defaultGameConfig,
     tank: new Tank(defaultGameConfig),
+    currentLine: NO_RUN_LINE,
   };
-  private fnAry: IFn[] = [];
+  private fnAry: IFnAndParams[] = [];
   constructor(props: RouteComponentProps<IGameProps>) {
     super(props);
     console.log("constructor game");
@@ -55,33 +64,25 @@ export default class Game extends Component<
     this.setEventEmitterHandlers(false);
   }
 
-  componentDidUpdate(preProps: RouteComponentProps<IGameProps>) {
+  componentDidUpdate(preProps: RouteComponentProps<IGameProps>, preState: IGameState) {
     const level = Number(this.props.match.params.level);
     const preLevel = Number(preProps.match.params.level);
     if (level !== preLevel) {
       this.init();
     }
+  }
 
+  isSuccess() {
     const tank = this.state.tank;
     const targetConfig = this.state.gameConfig.targetConfig;
-    if (tank.left === targetConfig.left && tank.top === targetConfig.top) {
-      setTimeout(() => {
-        Modal.success({
-          title: 'This is a success message',
-          content: 'some messages...some messages...',
-          onOk: () => {
-            console.log('on ok');
-          }
-        });
-      }, 1000);
-    }
+    return tank.left === targetConfig.left && tank.top === targetConfig.top;
   }
 
   setEventEmitterHandlers = (on: boolean) => {
     const act = on ? 'on' : 'off';
     eventEmitter[act](EVENTS.MOVE, this.pushMoveEvent);
-    eventEmitter[act](EVENTS.TURN_LEFT, this.handleTurnLeft);
-    eventEmitter[act](EVENTS.TURN_RIGHT, this.handleTurnRight);
+    eventEmitter[act](EVENTS.TURN_LEFT, this.pushTurnEvent);
+    eventEmitter[act](EVENTS.TURN_RIGHT, this.pushTurnEvent);
     eventEmitter[act](EVENTS.FINISH, this.handleFinish);
   }
 
@@ -97,36 +98,71 @@ export default class Game extends Component<
     this.setState({
       gameConfig,
       tank,
+    }, () => {
+      notification.info({
+        message: 'Welcome to my Game',
+        description:gameConfig.guideText,
+      });
     });
   }
 
   handleFinish = async () => {
     console.log('handleFinish before');
     for (const item of this.fnAry) {
-      await item();
+      console.log('执行', item.currentLine);
+      this.setCurrentLine(item.currentLine);
+      await item.fn(item.params);
+    }
+    this.fnAry = [];
+    this.setCurrentLine(NO_RUN_LINE);
+
+    if (this.isSuccess()) {
+      Modal.success({
+        title: '恭喜你 顺利通过',
+        content: 'some messages...some messages...',
+        onOk: () => {
+          console.log('on ok');
+        }
+      });
     }
     console.log('handleFinish after');
   }
 
-  handleTurn = (isLeft: boolean) => {
+  pushTurnEvent = (currentLine: number, isLeft: boolean) => {
+    console.log('push turn before', currentLine, isLeft);
+    const fn = isLeft ? this.handleTurnLeft : this.handleTurnRight;
+    this.fnAry.push({
+      fn,
+      currentLine,
+      params: null,
+    })
+    console.log('push turn after');
+  }
+
+  handleTurn = async (isLeft: boolean) => {
     const { tank } = this.state;
     const newTank = isLeft ? tank.turnLeft() : tank.turnRight();
     this.setState({
       tank: newTank,
     });
+    await sleep(1000);
   }
 
-  handleTurnLeft = () => {
-    this.handleTurn(true);
+  handleTurnLeft = async () => {
+    await this.handleTurn(true);
   }
 
-  handleTurnRight = () => {
-    this.handleTurn(false);
+  handleTurnRight = async () => {
+    await this.handleTurn(false);
   }
 
-  pushMoveEvent = () => {
-    console.log('push move before');
-    this.fnAry.push(this.handleMove);
+  pushMoveEvent = (currentLine: number, steps: number) => {
+    console.log('push move before', currentLine, steps);
+    this.fnAry.push({
+      currentLine,
+      fn: this.handleMove,
+      params: steps,
+    });
     console.log('push move after');
   }
 
@@ -141,8 +177,21 @@ export default class Game extends Component<
     console.log('move after');
   }
 
+  setCurrentLine = (line: number) => {
+    this.setState({
+      currentLine: line,
+    });
+  }
+
+  reset = () => {
+    console.log('reset');
+    this.setState({
+      tank: new Tank(this.state.gameConfig)
+    });
+  }
+
   render() {
-    const { gameConfig, tank } = this.state;
+    const { gameConfig, tank, currentLine } = this.state;
     const gameMap = gameConfig.gameMap;
     const size = gameConfig.size;
 
@@ -155,7 +204,7 @@ export default class Game extends Component<
     return (
       <Style.GameContainer>
         <GameUI gameMap={gameMap} size={size} tankUI={tankUI} />
-        <MiniCompiler />
+        <MiniCompiler currentLine={currentLine} reset={this.reset} />
       </Style.GameContainer>
     );
   }

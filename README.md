@@ -66,7 +66,7 @@ let add = fn(a, b) {
     // return 语句 块级语句
     return a + b;
 }
-add(1, 2); 
+add(1, 2);
 
 // 5. if-else语句
 if (true) {
@@ -80,6 +80,15 @@ let a = 0;
 while(a < 5) {
     // 赋值语句
     a = a + 1;
+}
+
+let count = 4;
+while(count > 0) {
+    move(1);
+    turnLeft();
+    move(1);
+    turnRight();
+    count = count -1;
 }
 ```
 

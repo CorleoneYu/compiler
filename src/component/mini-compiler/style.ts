@@ -38,7 +38,7 @@ export const CompilerBox = styled.div`
       }
 
       .current-line {
-        background: red;
+        background: #40a9ff;
       }
     }
 
@@ -61,6 +61,10 @@ export const CompilerBox = styled.div`
   }
 
   .compiler__btn-group {
-    margin: 20px 0;
+    margin: 20px 0 20px 40px;
+
+    & > button {
+      margin-right: 20px; 
+    }
   }
 `;
