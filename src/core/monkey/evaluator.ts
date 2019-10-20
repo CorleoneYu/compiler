@@ -31,7 +31,6 @@ import {
   StringExpression,
   NodeType,
 } from "./typings";
-import { EVENTS, eventEmitter } from '../../constant';
 import { implementFns } from '../../constant';
 
 export default class MonkeyEvaluator {
@@ -47,8 +46,6 @@ export default class MonkeyEvaluator {
         break;
       }
     }
-
-    eventEmitter.emit(EVENTS.FINISH);
     return result;
   }
 

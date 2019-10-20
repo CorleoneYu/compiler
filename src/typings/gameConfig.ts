@@ -72,7 +72,6 @@ export class GameConfig {
     this.steelsConfig = steelsConfig;
     this.size = size;
     this.guideText = guideText;
-    console.log('constructor gameConfig', this);
     this.initGameMap();
   }
 
@@ -105,7 +104,6 @@ export class GameConfig {
     const { width, height } = this.size;
     if (left >= 0 && top >= 0 && left < width && top < height) {
       this.gameMap[top][left].push(imgType);
-      console.log(`this.gameMap[${top}][${left}]`, this.gameMap[top][left]);
     }
   }
 
