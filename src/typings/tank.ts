@@ -71,4 +71,27 @@ export class Tank implements ITankUI {
       this.direction = Direction.right;
     }
   }
+
+  canMove() {
+    let gameConfig = this.gameConfig;
+    let targetX = this.left;
+    let targetY = this.top;
+
+    switch(this.direction) {
+      case Direction.left:
+        targetX -= 1;
+        break;
+      case Direction.right:
+        targetX += 1;
+        break;
+      case Direction.up:
+        targetY -= 1;
+        break;
+      case Direction.down:
+        targetY += 1;
+        break;
+    }
+
+    return gameConfig.canMove(targetX, targetY);
+  }
 }

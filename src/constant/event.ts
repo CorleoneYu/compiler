@@ -6,6 +6,5 @@ export const EVENTS = {
   MOVE: 'MOVE',
   TURN_LEFT: 'TURN_LEFT',
   TURN_RIGHT: 'TURN_RIGHT',
-  FINISH: 'FINISH',
 };
 

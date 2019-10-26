@@ -3,7 +3,7 @@ import { cloneDeep } from "lodash-es";
 
 import MiniCompiler from '../mini-compiler';
 import GameUI from '../game-ui';
-import { Modal, notification } from 'antd'
+import { Modal, notification, Button } from 'antd'
 
 import { config, eventEmitter, EVENTS } from "../../constant";
 import { GameConfig, defaultGameConfig, Tank, ITankUI, } from '../../typings';
@@ -114,7 +114,7 @@ export default class Game extends Component<
       tank,
     }, () => {
       notification.info({
-        message: 'Welcome to my Game',
+        message: '欢迎来到我的游戏~',
         description:gameConfig.guideText,
       });
     });
@@ -187,6 +187,24 @@ export default class Game extends Component<
     });
   }
 
+  move = () => {
+    this.setState({
+      tank: this.state.tank.move(1)
+    });
+  }
+
+  turnLeft = () => {
+    this.setState({
+      tank: this.state.tank.turnLeft(),
+    })
+  }
+
+  turnRight = () => {
+    this.setState({
+      tank: this.state.tank.turnRight(),
+    })
+  }
+
   render() {
     const { gameConfig, tank, currentLine } = this.state;
     const gameMap = gameConfig.gameMap;
@@ -202,6 +220,12 @@ export default class Game extends Component<
       <Style.GameContainer>
         <GameUI gameMap={gameMap} size={size} tankUI={tankUI} />
         <MiniCompiler currentLine={currentLine} reset={this.reset} />
+
+        <div className="debug">
+          <Button onClick={this.move}>move</Button>
+          <Button onClick={this.turnLeft}>turnLeft</Button>
+          <Button onClick={this.turnRight}>turnRight</Button>
+        </div>
       </Style.GameContainer>
     );
   }

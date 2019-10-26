@@ -8,4 +8,13 @@ export const GameContainer = styled.div`
   & > div {
     width: 50%;
   }
+
+  .debug {
+    position: absolute;
+    bottom: 10px;
+
+    button {
+      margin-left: 10px;
+    }
+  }
 `;

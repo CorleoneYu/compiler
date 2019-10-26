@@ -30,7 +30,6 @@ export default class Executor {
   }
 
   next() {
-    console.log(this);
     if (!this.tasks.length) {
       this.isWorking = false;
 

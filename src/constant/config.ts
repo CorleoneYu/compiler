@@ -7,7 +7,7 @@ export const config: GameConfig[] = [
     steelsConfig: [],
     targetConfig: { left: 4, top: 0 },
     size: { width: 5, height: 1 },
-    guideText: 'you can use "move" to let the tank go to the target',
+    guideText: '使用move()函数来使坦克到达目的地~',
   }),
   new GameConfig({
     level: 1,
@@ -15,7 +15,7 @@ export const config: GameConfig[] = [
     steelsConfig: [],
     targetConfig: { left: 4, top: 0 },
     size: { width: 5, height: 1 },
-    guideText: 'you can use "turnLeft" and "move" to let the tank go to the target',
+    guideText: '使用turnRight()函数来使坦克向右转弯~',
   }),
   new GameConfig({
     level: 2,
@@ -27,7 +27,7 @@ export const config: GameConfig[] = [
     ],
     targetConfig: { left: 3, top: 0 },
     size: { width: 4, height: 4 },
-    guideText: 'you can use "turnLeft" and "move" to let the tank go to the target',
+    guideText: 'turnLeft() turnRight() 可以使坦克避开障碍物到达目的地~',
   }),
 
   // 可以使用循环
@@ -48,7 +48,7 @@ export const config: GameConfig[] = [
     ],
     targetConfig: { left: 0, top: 4 },
     size: { width: 5, height: 5 },
-    guideText: 'you can use "turnLeft" and "move" to let the tank go to the target',
+    guideText: '可以尝试while循环来简化代码~',
   }),
 
   // let times = 3;
@@ -75,6 +75,6 @@ export const config: GameConfig[] = [
     ],
     targetConfig: { left: 0, top: 0 },
     size: { width: 4, height: 4 },
-    guideText: 'you can use "turnLeft" and "move" to let the tank go to the target',
+    guideText: '可以尝试函数定义 与 循环 结合 更优雅的到达目的地~',
   })
 ];

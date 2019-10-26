@@ -156,9 +156,12 @@ export default class MiniCompiler extends Component<IProps, IState> {
           onClose={this.onCloseDrawer}
           visible={drawerVisible}
         >
-          <p>move</p>
-          <p>turnLeft</p>
-          <p>turnRight</p>
+          <h3>move(step)</h3>
+          <p>参数step: 向前移动的格子数<br />作用： 控制坦克向前移动</p>
+          <h3>turnLeft()</h3>
+          <p>作用：控制坦克向左转向</p>
+          <h3>turnRight()</h3>
+          <p>作用：控制坦克向右转向</p>
         </Drawer>
       </Styles.CompilerBox>
     );
