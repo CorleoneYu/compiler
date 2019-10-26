@@ -138,8 +138,15 @@ export default class MonkeyEvaluator {
     const fnName = fnCallNode.function.name;
     if (implementFns.has(fnName)) {
       const fn = implementFns.get(fnName);
-      fn!([fnCallNode.token.line(), ...args]);
-      return new NullNode();
+      let result = fn!([fnCallNode.token.line(), ...args]);
+
+      console.log('implementFns', result);
+      if (typeof result === undefined) {
+        result = new NullNode()
+      } else {
+        result = new BooleanNode({ value: result});
+      }
+      return result;
     }
 
     const fnCall = this.eval(fnCallNode.function) as FnCallNode;

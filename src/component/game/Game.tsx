@@ -117,6 +117,8 @@ export default class Game extends Component<
         message: '欢迎来到我的游戏~',
         description:gameConfig.guideText,
       });
+
+      eventEmitter.emit(EVENTS.TANK_CHANGE, tank);
     });
   }
 
@@ -181,9 +183,12 @@ export default class Game extends Component<
   }
 
   reset = () => {
+    const resetTank = new Tank(this.state.gameConfig)
     this.setState({
-      tank: new Tank(this.state.gameConfig),
+      tank: resetTank,
       currentLine: NO_RUN_LINE,
+    }, () => {
+      eventEmitter.emit(EVENTS.TANK_CHANGE, resetTank);
     });
   }
 
