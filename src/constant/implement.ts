@@ -32,7 +32,6 @@ const turnRightFn: IImplementFn = (args) => {
 }
 
 const canMoveFn: IImplementFn = (args) => {
-  const line = args.shift();
   console.log('can move', tank && tank.canMove());
   
   if (tank) {

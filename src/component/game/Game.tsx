@@ -12,6 +12,8 @@ import Executor from './executor';
 
 import * as Style from "./style";
 
+import '../../core/sql/parser/test.ts';
+
 type IGameProps = {
   level: string;
 };
@@ -210,6 +212,10 @@ export default class Game extends Component<
     })
   }
 
+  canMove = () => {
+    console.log('can move', this.state.tank.canMove());
+  }
+
   render() {
     const { gameConfig, tank, currentLine } = this.state;
     const gameMap = gameConfig.gameMap;
@@ -227,6 +233,7 @@ export default class Game extends Component<
         <MiniCompiler currentLine={currentLine} reset={this.reset} />
 
         <div className="debug">
+          <Button onClick={this.canMove}>canMove</Button>
           <Button onClick={this.move}>move</Button>
           <Button onClick={this.turnLeft}>turnLeft</Button>
           <Button onClick={this.turnRight}>turnRight</Button>

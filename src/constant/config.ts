@@ -37,6 +37,16 @@ export const config: GameConfig[] = [
   // move(4);
   // turnLeft();
   // move(4);
+
+  // let times = 6;
+  // while(times) {
+  //     times = times - 1;
+  //     if (canMove()) {
+  //         move(5);
+  //     } else {
+  //         turnLeft();
+  //     }
+  // }
   new GameConfig({
     level: 3,
     tankConfig: { left: 4, top: 4, direction: Direction.right },
@@ -51,14 +61,18 @@ export const config: GameConfig[] = [
     guideText: '可以尝试while循环来简化代码~',
   }),
 
+  // let step = fn() {
+  //   turnLeft();
+  //   move(1);
+  //   turnRight();
+  //   move(1);
+  // }
   // let times = 3;
   // while(times > 0) {
-  //     turnLeft();
-  //     move(1);
-  //     turnRight();
-  //     move(1);
+  //     step();
   //     times = times - 1;
-  // }   
+  // } 
+  
   new GameConfig({
     level: 4,
     tankConfig: { left: 3, top: 3, direction: Direction.up },

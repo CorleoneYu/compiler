@@ -162,6 +162,8 @@ export default class MiniCompiler extends Component<IProps, IState> {
           <p>作用：控制坦克向左转向</p>
           <h3>turnRight()</h3>
           <p>作用：控制坦克向右转向</p>
+          <h3>canMove()</h3>
+          <p>作用：用来判断坦克是否可以向前移动</p>
         </Drawer>
       </Styles.CompilerBox>
     );
