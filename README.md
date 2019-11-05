@@ -118,25 +118,23 @@ while(count > 0) {
 
 ### 与编程游戏结合
 
+1. 支持内置函数
+    1. move(step)
+    2. canMove: 用于判断坦克是否可以向前移动
+    3. turnLeft() turnRight()
+2. 执行中代码高亮
+3. 任务执行器
+
 难点：
 
-1. 旋转
-2. 任务调度中心
+1. 程序执行中canMvoe()结果需返回给程序执行使用
+2. 任务执行 异步调度
 
-预期功能：
+![效果](https://chenweilin.xin/blogImg/1572966259738Q2.gif)
 
-1. service work
-2. 当前执行行提示
-
-### todo
-
-1. array object解析
-2. 内置api
+## TODO 前端精读系列 SQL编译器
 
 ## TODO 编译原理 虎书
 
 ## TODO 编译原理 龙书
 
-可以结合B站哈工大的视频看
-
-## TARGET 完成自己的小编译器
