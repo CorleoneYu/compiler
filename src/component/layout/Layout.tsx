@@ -21,7 +21,7 @@ export default class extends Component {
       <BrowserRouter>
         <Layout>
           <Header className="header">
-            <h1 className="cwhite">儿童编程游戏</h1>
+            <h1 className="cwhite">少儿编程平台</h1>
           </Header>
           <Layout style={{ height: "calc(100vh - 64px)", overflow: "hidden" }}>
             <Sider width={200} style={{ background: "#fff" }}>

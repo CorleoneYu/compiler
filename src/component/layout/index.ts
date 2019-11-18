@@ -1,4 +1,3 @@
-import main from '../../core/simple'
-main();
+import Layout from './Layout';
 
-export {default} from './Layout';
+export default Layout;

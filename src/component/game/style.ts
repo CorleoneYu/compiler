@@ -12,6 +12,7 @@ export const GameContainer = styled.div`
   .debug {
     position: absolute;
     bottom: 10px;
+    display: none;
 
     button {
       margin-left: 10px;
