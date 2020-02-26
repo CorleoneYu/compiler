@@ -1,0 +1,70 @@
+第零、一关
+
+if (!canMove()) {
+    turnRight();
+}
+move(5);
+
+
+第二关
+
+turnLeft();
+move(3);
+turnRight();
+move(3);
+
+
+第三关
+
+// 普通版
+turnLeft();
+move(5);
+turnLeft();
+move(5);
+
+
+// 循环
+let times = 3;
+while(times) {
+    times = times -1;
+    turnLeft();
+    move(5);
+}
+
+// 循环 + if-else
+let times = 6;
+while(times) {
+    times = times -1;
+    if (canMove()) {
+        move(5);
+    } else {
+        turnLeft();
+    }
+}
+
+
+第四关
+
+// 循环
+let times = 3;
+while(times) {
+    times = times -1;
+    turnLeft();
+    move(1);
+    turnRight();
+    move(1);
+}
+
+// 循环 + 函数
+let times = 3;
+let step = fn() {
+    turnLeft();
+    move(1);
+    turnRight();
+    move(1);
+};
+
+while(times) {
+    times = times -1;
+    step();
+}
