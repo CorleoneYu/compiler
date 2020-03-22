@@ -33,6 +33,7 @@ export enum TokenType {
   RIGHT_PARENT = 'RIGHT_PARENT', // )
   LEFT_BRACKET = 'LEFT_BRACKET', // [
   RIGHT_BRACKET = 'RIGHT_BRACKET', // ]
+  COLON = 'COLON', // :
 
   /** 保留字 关键字 */
   LET = 'LET',

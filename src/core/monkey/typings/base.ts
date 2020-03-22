@@ -9,6 +9,7 @@ export enum BaseType {
   NULL = 'NULL',
   FUNCTION_CALL = 'FUNCTION_CALL',
   ARRAY = 'ARRAY',
+  MAP = 'MAP',
 }
 
 export class Base {
@@ -141,5 +142,23 @@ export class ArrayNode extends Base {
     super();
     this.elements = props.elements;
     this.inspect = `array with value ${this.value}`;
+  }
+}
+
+interface IMapNodeProps {
+  keys: Base[];
+  values: Base[];
+}
+export class MapNode extends Base {
+  type = BaseType.MAP;
+  keys: Base[] = [];
+  values: Base[] = [];
+  value = 'map';
+
+  constructor(props: IMapNodeProps) {
+    super();
+    this.keys = props.keys;
+    this.values = props.values;
+    this.inspect = `map with value ${this.value}`;
   }
 }

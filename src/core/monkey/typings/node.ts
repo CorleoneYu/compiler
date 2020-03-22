@@ -20,9 +20,10 @@ export enum NodeType {
   CALL_EXP = 'CALL_EXP',  // 函数调用
   ARRAY_EXP = 'ARRAY_EXP', // 数组
   KEY_EXP = 'KEY_EXP', // a[1] 等调用
+  MAP_EXP = 'MAP_EXP', // map
 }
 
-export interface INodeProps {
+interface INodeProps {
   token: Token;
 }
 
@@ -58,17 +59,15 @@ export class Statement extends Node {
  * 声明语句
  * 形如 let 变量名 = 表达式
  */
-export interface ILetStatementProps extends INodeProps {
+interface ILetStatementProps extends INodeProps {
   identifier: IdentifierExpression;
   expression: Expression;
 }
 export class LetStatement extends Statement {
-  token: Token;
   name: IdentifierExpression;
   value: Expression;
   constructor(props: ILetStatementProps) {
     super(props);
-    this.token = props.token;
     this.name = props.identifier;
     this.value = props.expression;
     this.tokenLiteral =
@@ -79,7 +78,7 @@ export class LetStatement extends Statement {
   }
 }
 
-export interface IIfStatementProps extends INodeProps {
+interface IIfStatementProps extends INodeProps {
   condition: Expression;
   consequence: BlockStatement;
   alternative?: BlockStatement;
@@ -91,13 +90,11 @@ export interface IIfStatementProps extends INodeProps {
  * }
  */
 export class IfStatement extends Statement {
-  token: Token;
   condition: Expression;
   consequence: BlockStatement;
   alternative?: BlockStatement;
   constructor(props: IIfStatementProps) {
     super(props);
-    this.token = props.token;
     this.condition = props.condition;
     this.consequence = props.consequence;
     this.alternative = props.alternative;
@@ -109,7 +106,7 @@ export class IfStatement extends Statement {
   }
 }
 
-export interface IAssignStatementProps extends INodeProps {
+interface IAssignStatementProps extends INodeProps {
   identifier: IdentifierExpression;
   value: Expression;
 }
@@ -118,19 +115,17 @@ export interface IAssignStatementProps extends INodeProps {
  * 形如 变量名 = 表达式
  */
 export class AssignStatement extends Statement {
-  token: Token;
   identifier: IdentifierExpression;
   value: Expression;
   constructor(props: IAssignStatementProps) {
     super(props);
-    this.token = props.token;
     this.identifier = props.identifier;
     this.value = props.value;
     this.nodeType = NodeType.ASSIGN_STMT;
   }
 }
 
-export interface IWhileStatementProps extends INodeProps  {
+interface IWhileStatementProps extends INodeProps  {
   condition: Expression;
   body: BlockStatement;
 }
@@ -141,19 +136,17 @@ export interface IWhileStatementProps extends INodeProps  {
  * }
  */
 export class WhileStatement extends Statement {
-  token: Token;
   body: BlockStatement;
   condition: Expression;
   constructor(props: IWhileStatementProps) {
     super(props);
-    this.token = props.token;
     this.condition = props.condition;
     this.nodeType = NodeType.WHILE_STMT;
     this.body = props.body;
   }
 }
 
-export interface IReturnStatementProps extends INodeProps {
+interface IReturnStatementProps extends INodeProps {
   expression: Expression;
 }
 /**
@@ -161,47 +154,41 @@ export interface IReturnStatementProps extends INodeProps {
  * 形如 return 表达式
  */
 export class ReturnStatement extends Statement {
-  token: Token;
   expression: Expression;
   constructor(props: IReturnStatementProps) {
     super(props);
-    this.token = props.token;
     this.expression = props.expression;
     this.tokenLiteral = `return with ${this.expression.getLiteral()}`;
     this.nodeType = NodeType.RETURN_STMT;
   }
 }
 
-export interface IExpressionStmt extends INodeProps {
+interface IExpressionStmt extends INodeProps {
   expression: Expression;
 }
 /**
  * 表达式语句
  */
 export class ExpressionStatement extends Statement {
-  token: Token;
   expression: Expression;
   constructor(props: IExpressionStmt) {
     super(props);
-    this.token = props.token;
     this.expression = props.expression;
     this.tokenLiteral = `expression ${this.expression.getLiteral()}`;
     this.nodeType = NodeType.EXPRESSION_STMT;
   }
 }
 
-export interface IBlockStmt extends INodeProps {
+interface IBlockStmt extends INodeProps {
   statements: Statement[];
 }
 /**
  * 语句块
  */
 export class BlockStatement extends Statement {
-  token: Token;
   statements: Statement[];
   constructor(props: IBlockStmt) {
     super(props);
-    this.token = props.token;
     this.statements = props.statements;
     this.tokenLiteral = String(this.statements);
     this.nodeType = NodeType.BLOCK_STMT;
@@ -222,71 +209,63 @@ export class Expression extends Node {
   }
 }
 
-export interface IIdentifierExpression extends INodeProps {
+interface IIdentifierExpression extends INodeProps {
   name: string;
 }
 /**
  * 变量表达式
  */
 export class IdentifierExpression extends Expression {
-  token: Token;
   name: string;
   constructor(props: IIdentifierExpression) {
     super(props);
-    this.token = props.token;
     this.name = props.name;
     this.tokenLiteral = `IdentifierExpression name is: ${this.name}`;
     this.nodeType = NodeType.IDENTIFIER_EXP;
   }
 }
 
-export interface IIntegerProps extends INodeProps {
+interface IIntegerProps extends INodeProps {
   value: number;
 }
 /**
  * 整形表达式
  */
 export class IntegerExpression extends Expression {
-  token: Token;
   value: number;
   constructor(props: IIntegerProps) {
     super(props);
-    this.token = props.token;
     this.value = props.value;
     this.tokenLiteral = `Integer value is: ${this.token.val()}`;
     this.nodeType = NodeType.INTEGER_EXP;
   }
 }
 
-export interface IStringProps extends INodeProps {
+interface IStringProps extends INodeProps {
   value: string;
 }
 /**
  * 字符串表达式
  */
 export class StringExpression extends Expression {
-  token: Token;
   value: string;
   constructor(props: IStringProps) {
     super(props);
-    this.token = props.token;
     this.value = props.value;
     this.tokenLiteral = `String value is: ${this.token.val()}`;
     this.nodeType = NodeType.STRING_EXP;
   }
 }
 
-export interface IPrefixProps extends INodeProps {
+interface IPrefixProps extends INodeProps {
   operator: string;
   right: Expression;
 }
 export class PrefixExpression extends Expression {
-  token: Token;
   operator: string;
   right: Expression;
   constructor(props: IPrefixProps) {
     super(props);
-    this.token = props.token;
     this.operator = props.operator;
     this.right = props.right;
     this.tokenLiteral = `( operator:${
@@ -311,7 +290,7 @@ export class ErrorExpression extends Expression {
   }
 }
 
-export interface IInfixProps extends INodeProps {
+interface IInfixProps extends INodeProps {
   left: Expression;
   operator: string;
   right: Expression;
@@ -332,25 +311,23 @@ export class InfixExpression extends Expression {
   }
 }
 
-export interface IBooleanProps extends INodeProps {
+interface IBooleanProps extends INodeProps {
   value: Boolean;
 }
 /**
  * 布尔值表达式
  */
 export class BooleanExpression extends Expression {
-  token: Token;
   value: Boolean;
   constructor(props: IBooleanProps) {
     super(props);
-    this.token = props.token;
     this.value = props.value;
     this.tokenLiteral = `Boolean with ${this.value}`;
     this.nodeType = NodeType.BOOLEAN_EXP;
   }
 }
 
-export interface IFunctionProps extends INodeProps {
+interface IFunctionProps extends INodeProps {
   parameters: IdentifierExpression[] | ErrorExpression[];
   body: BlockStatement;
 }
@@ -358,12 +335,10 @@ export interface IFunctionProps extends INodeProps {
  * 函数表达式
  */
 export class FunctionExpression extends Expression {
-  token: Token;
   parameters: IdentifierExpression[] | ErrorExpression[];
   body: BlockStatement;
   constructor(props: IFunctionProps) {
     super(props);
-    this.token = props.token;
     this.parameters = props.parameters;
     this.body = props.body;
     this.tokenLiteral =
@@ -374,7 +349,7 @@ export class FunctionExpression extends Expression {
   }
 }
 
-export interface ICallProps extends INodeProps {
+interface ICallProps extends INodeProps {
   function: Expression;
   arguments: Expression[];
 }
@@ -382,19 +357,17 @@ export interface ICallProps extends INodeProps {
  * 函数调用表达式
  */
 export class CallExpression extends Expression {
-  token: Token;
   function: IdentifierExpression;
   arguments: Expression[];
   constructor(props: ICallProps) {
     super(props);
-    this.token = props.token;
     this.function = props.function as IdentifierExpression;
     this.arguments = props.arguments;
     this.nodeType = NodeType.CALL_EXP;
   }
 }
 
-export interface IArrayProps extends INodeProps {
+interface IArrayProps extends INodeProps {
   elements: Expression[];
 }
 /**
@@ -404,17 +377,15 @@ export interface IArrayProps extends INodeProps {
  * elements => a, b, c, d
  */
 export class ArrayExpression extends Expression {
-  token: Token;
   elements: Expression[];
   constructor(props: IArrayProps) {
     super(props);
-    this.token = props.token;
     this.elements = props.elements;
     this.nodeType = NodeType.ARRAY_EXP;
   }
 }
 
-export interface IKeyProps extends INodeProps {
+interface IKeyProps extends INodeProps {
   left: Expression;
   key: Expression;
 }
@@ -430,6 +401,27 @@ export class KeyExpression extends Expression {
     this.left = props.left;
     this.key = props.key;
     this.nodeType = NodeType.KEY_EXP;
+  }
+}
+
+interface IMapProps extends INodeProps {
+  keys: Expression[];
+  values: Expression[];
+}
+/**
+ * map 表达式
+ * 声明、赋值时可使用 let map = { "a": 1, b: 2, 2 + 1: 3 };
+ * key => "a" "b"
+ * value => 1, 2
+ */
+export class MapExpression extends Expression {
+  keys: Expression[];
+  values: Expression[];
+  constructor(props: IMapProps) {
+    super(props);
+    this.keys = props.keys;
+    this.values = props.values;
+    this.nodeType = NodeType.MAP_EXP;
   }
 }
 

@@ -33,6 +33,8 @@ import {
   ArrayExpression,
   ArrayNode,
   KeyExpression,
+  MapExpression,
+  MapNode,
 } from "./typings";
 import { implementFns } from '../../constant';
 
@@ -110,6 +112,10 @@ export default class MonkeyEvaluator {
       case NodeType.KEY_EXP:
         return this.evalKeyExpression(node as KeyExpression);
 
+      // 解析出 map
+      case NodeType.MAP_EXP:
+        return this.evalMapExpression(node as MapExpression);
+
       default:
         return new ErrorNode({ value: `unknown nodeType ${node.nodeType}` });
     }
@@ -145,6 +151,10 @@ export default class MonkeyEvaluator {
     }
 
     // 对象形式调用 形如 { a: 1, b : 2}[a]
+    if (left.type === BaseType.MAP) {
+      return this.evalMapKeyExpression(left as MapNode, key);
+    }
+
     return new NullNode();
   }
 
@@ -158,6 +168,81 @@ export default class MonkeyEvaluator {
     }
 
     return array.elements[idx];
+  }
+
+  evalMapKeyExpression(map: MapNode, key: Base) {
+    if (!this._canHash(key)) {
+      return new ErrorNode({ 
+        value: `can not hash type: ${key.type}`,
+      });
+    }
+
+    // 遍历找匹配的 key
+    // 所以需要是基础类型
+    for (let i = 0; i < map.keys.length; i++) {
+      if (map.keys[i].value === key.value) {
+        console.log('find', map, key, map.values[i]);
+        return map.values[i];
+      }
+    }
+
+    console.warn('not find', map, key);
+    return new NullNode();
+  }
+
+  /**
+   * 解析出 map 结构
+   * 对每个 key, value 需要先使用 eval 求值
+   * 形如：
+   * let add = fn(x, y) { return x + y; };
+   * let byOne = fn(x) { return x; };
+   * { add(1, 2): byOne(3) }
+   * 执行 add(1, 2) => 3
+   * 执行 byOne(3) => 3
+   * @param mapNode 
+   */
+  evalMapExpression(mapNode: MapExpression) {
+    const keys = [];
+    const values = [];
+
+    for (let i = 0; i < mapNode.keys.length; i++) {
+      const curKey = mapNode.keys[i];
+      const key = this.eval(curKey);
+
+      if (this.isError(key)) {
+        return key;
+      }
+
+      // key 解析后 需要为基础类型 即 整形、字符串、布尔值
+      // 可以品一品为什么需要是基础类型
+      if (!this._canHash(key)) {
+        return new ErrorNode({
+          value: `can not hash type: ${key.type}`,
+        });
+      }
+
+      const value = this.eval(mapNode.values[i]);
+      if (this.isError(value)) {
+        return value;
+      }
+
+      keys.push(key);
+      values.push(value);
+    }
+
+    console.log('evalMapExpression', keys, values);
+    return new MapNode({ keys, values });
+  }
+
+  _canHash(node: Base) {
+    switch (node.type) {
+      case BaseType.INTEGER:
+      case BaseType.STRING:
+      case BaseType.BOOLEAN:
+        return true;
+      default:
+        return false;
+    }
   }
 
   evalArrayExpression(arrayNode: ArrayExpression) {

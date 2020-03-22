@@ -21,6 +21,7 @@ import {
   StringExpression,
   ArrayExpression,
   KeyExpression,
+  MapExpression,
 } from "./typings";
 import { TokenType, PrecedenceMap, Token2Precedence } from "./constant";
 
@@ -164,6 +165,50 @@ export default class MonkeyParser {
   } 
 
 
+  private parseMapExpression = () => {
+    // curToken => {
+    const token = this.curToken;
+    const keys: Expression[] = [];
+    const values: Expression[] = [];
+
+    while (!this.peekTokenIs(TokenType.RIGHT_BRACE)) {
+      // 越过 {
+      this.nextToken();
+
+      // 解析 左边的 key
+      const key = this.parseExpression(PrecedenceMap.LOWEST);
+
+      // 判断下一个 token 是否为 :
+      if (!this.expectPeek(TokenType.COLON)) {
+        return new ErrorExpression({
+          token,
+          error: 'parseMapExpression: miss :',
+        })
+      };
+
+      // 越过 :
+      this.nextToken();
+
+      // 解析 右边的 value
+      const value = this.parseExpression(PrecedenceMap.LOWEST);
+
+      keys.push(key);
+      values.push(value);
+
+      // 必须跟着 , 或者 } => 跟着其他则报错
+      if (!this.peekTokenIs(TokenType.COMMA) && !this.peekTokenIs(TokenType.RIGHT_BRACE)) {
+        return new ErrorExpression({
+          token,
+          error: 'parseMapExpression: miss , 或 }',
+        })
+      }
+    }
+
+    // 跳过结尾的 }
+    this.nextToken();
+
+    return new MapExpression({ keys, values, token });
+  }
   prefixParseFns: Map<TokenType, () => Expression> = new Map([
     [TokenType.IDENTIFIER, this.parseIdentifier],
     [TokenType.INTEGER, this.parseIntegerExpression],
@@ -175,6 +220,7 @@ export default class MonkeyParser {
     [TokenType.FN, this.parseFunctionExpression],
     [TokenType.STRING, this.parseStringExpression],
     [TokenType.LEFT_BRACKET, this.parseArrayExpression],
+    [TokenType.LEFT_BRACE, this.parseMapExpression],
   ]);
 
   private parseInfixExpression = (left: Expression) => {
