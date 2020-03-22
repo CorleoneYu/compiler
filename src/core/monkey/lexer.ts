@@ -116,6 +116,12 @@ export default class MonkeyLexer {
       case ')':
         tok = new Token(TokenType.RIGHT_PARENT, ')', lineCount, prefix);
         break;
+      case '[':
+        tok = new Token(TokenType.LEFT_BRACKET, '[', lineCount, prefix);
+        break;
+      case ']':
+        tok = new Token(TokenType.RIGHT_BRACKET, ']', lineCount, prefix);
+        break;
       case EOF:
         tok = new Token(TokenType.EOF, '', lineCount, prefix);
         break;

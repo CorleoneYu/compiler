@@ -16,7 +16,7 @@ import {
   IdentifierExpression,
   
   BaseType,
-  IBase,
+  Base,
   ErrorNode,
   BooleanNode,
   IntegerNode,
@@ -30,6 +30,9 @@ import {
   StringNode,
   StringExpression,
   NodeType,
+  ArrayExpression,
+  ArrayNode,
+  KeyExpression,
 } from "./typings";
 import { implementFns } from '../../constant';
 
@@ -42,14 +45,14 @@ export default class MonkeyEvaluator {
     for (let i = 0; i < program.statements.length; i++) {
       result = this.eval(program.statements[i]);
 
-      if (result.type() === BaseType.RETURN_VALUE || result.type() === BaseType.ERROR) {
+      if (result.type === BaseType.RETURN_VALUE || result.type === BaseType.ERROR) {
         break;
       }
     }
     return result;
   }
 
-  eval(node: Node): IBase {
+  eval(node: Node): Base {
     switch (node.nodeType) {
       case NodeType.STRING_EXP:
         return new StringNode({ value: (node as StringExpression).value });
@@ -99,12 +102,20 @@ export default class MonkeyEvaluator {
       case NodeType.CALL_EXP:
         return this.evalFnCall(node as CallExpression);
 
+      // 解析出数组
+      case NodeType.ARRAY_EXP:
+        return this.evalArrayExpression(node as ArrayExpression);
+
+      // 解析出 形如 a[0] 的调用
+      case NodeType.KEY_EXP:
+        return this.evalKeyExpression(node as KeyExpression);
+
       default:
         return new ErrorNode({ value: `unknown nodeType ${node.nodeType}` });
     }
   }
 
-  evalExpressions(exps: Expression[]): IBase[] {
+   evalExpressions(exps: Expression[]): Base[] {
     const result = [];
     for (let i = 0; i < exps.length; i++) {
       const evaluated = this.eval(exps[i]);
@@ -115,6 +126,47 @@ export default class MonkeyEvaluator {
     }
 
     return result;
+  }
+
+  evalKeyExpression(keyNode: KeyExpression) {
+    const left = this.eval(keyNode.left);
+    if (this.isError(left)) {
+      return left;
+    }
+
+    const key = this.eval(keyNode.key);
+    if (this.isError(key)) {
+      return key;
+    }
+
+    if (left.type === BaseType.ARRAY && key.type === BaseType.INTEGER) {
+      // 数组形式调用 形如 [1, 2, 3][0] 
+      return this.evalArrayIndexExpression(left as ArrayNode, key);
+    }
+
+    // 对象形式调用 形如 { a: 1, b : 2}[a]
+    return new NullNode();
+  }
+
+  evalArrayIndexExpression(array: ArrayNode, index: IntegerNode) {
+    console.log('evalArrayIndexExpression', array, index);
+    const idx = index.value;
+    const max = array.elements.length - 1;
+    if (idx < 0 || idx > max) {
+      console.warn(`index: ${idx} array 越界`);
+      return new NullNode();
+    }
+
+    return array.elements[idx];
+  }
+
+  evalArrayExpression(arrayNode: ArrayExpression) {
+    const elements = this.evalExpressions(arrayNode.elements);
+    if (elements.length && this.isError(elements[0])) {
+      return elements[0];
+    }
+
+    return new ArrayNode({ elements });
   }
 
   evalFunction(fnNode: FunctionExpression) {
@@ -140,7 +192,6 @@ export default class MonkeyEvaluator {
       const fn = implementFns.get(fnName);
       let result = fn!([fnCallNode.token.line(), ...args]);
 
-      console.log('implementFns', result);
       if (typeof result === undefined) {
         result = new NullNode()
       } else {
@@ -171,7 +222,7 @@ export default class MonkeyEvaluator {
     // 重置作用域
     this.env = oldEnv;
 
-    if (fnCallResult.type() === BaseType.RETURN_VALUE) {
+    if (fnCallResult.type === BaseType.RETURN_VALUE) {
       console.log("function call return with :", fnCallResult);
       return (fnCallResult as ReturnNode).value;
     }
@@ -196,9 +247,9 @@ export default class MonkeyEvaluator {
     }
   }
 
-  evalBangOperatorExpression(right: IBase) {
+  evalBangOperatorExpression(right: Base) {
     let value = true;
-    switch (right.type()) {
+    switch (right.type) {
       case BaseType.BOOLEAN:
         if (right.value === true) {
           value = false;
@@ -217,8 +268,8 @@ export default class MonkeyEvaluator {
     return new BooleanNode({ value });
   }
 
-  evalMinusPrefixOperatorExpression(right: IBase) {
-    if (right.type() !== BaseType.INTEGER) {
+  evalMinusPrefixOperatorExpression(right: Base) {
+    if (right.type !== BaseType.INTEGER) {
       return new ErrorNode({ value: `operator - ${right} is un support` });
     }
 
@@ -226,6 +277,13 @@ export default class MonkeyEvaluator {
     return new IntegerNode({ value });
   }
 
+  /**
+   * 解析 中序表达式
+   * 1. 整形 1 + 1 等 支持 + - * / != == > <
+   * 2. 字符串 str1 + str2 等 支持 +
+   * 3. 布尔值 true == true 等 支持 == !==
+   * @param node 
+   */
   evalInfixExpression(node: InfixExpression) {
     const infixLeft = this.eval(node.left);
     if (this.isError(infixLeft)) {
@@ -238,17 +296,17 @@ export default class MonkeyEvaluator {
     }
     const infixOperator = node.operator;
 
-    if (infixLeft.type() !== infixRight.type()) {
+    if (infixLeft.type !== infixRight.type) {
       return new ErrorNode({
         value: `type miss match ${infixLeft.type} and ${infixRight.type}`
       });
     }
 
-    if (infixLeft.type() === BaseType.INTEGER && infixRight.type() === BaseType.INTEGER) {
+    if (infixLeft.type === BaseType.INTEGER && infixRight.type === BaseType.INTEGER) {
       return this.evalIntegerInfixExpression(infixOperator, infixLeft, infixRight);
     }
 
-    if (infixLeft.type() === BaseType.STRING && infixRight.type() === BaseType.STRING) {
+    if (infixLeft.type === BaseType.STRING && infixRight.type === BaseType.STRING) {
       return this.evalStringInfixExpression(infixOperator, infixLeft, infixRight);
     }
 
@@ -263,7 +321,7 @@ export default class MonkeyEvaluator {
     });
   }
 
-  evalStringInfixExpression(operator: string, left: IBase, right: IBase) {
+  evalStringInfixExpression(operator: string, left: Base, right: Base) {
     const leftVal = left.value;
     const rightVal = right.value;
 
@@ -276,7 +334,7 @@ export default class MonkeyEvaluator {
     });
   }
 
-  evalIntegerInfixExpression(operator: string, left: IBase, right: IBase) {
+  evalIntegerInfixExpression(operator: string, left: Base, right: Base) {
     const leftVal = left.value;
     const rightVal = right.value;
 
@@ -331,7 +389,7 @@ export default class MonkeyEvaluator {
       const result = this.eval(whileNode.body);
       console.log(`result`, result);
 
-      if (result.type() === BaseType.RETURN_VALUE) {
+      if (result.type === BaseType.RETURN_VALUE) {
         return result;
       }
 
@@ -377,8 +435,8 @@ export default class MonkeyEvaluator {
     for (let i = 0; i < nodes.statements.length; i++) {
       result = this.eval(nodes.statements[i]);
       if (
-        result.type() === BaseType.RETURN_VALUE ||
-        result.type() === BaseType.ERROR
+        result.type === BaseType.RETURN_VALUE ||
+        result.type === BaseType.ERROR
       ) {
         return result;
       }
@@ -403,26 +461,26 @@ export default class MonkeyEvaluator {
   }
 
   /** helper */
-  isError(target: IBase) {
+  isError(target: Base) {
     if (target) {
-      return target.type() === BaseType.ERROR;
+      return target.type === BaseType.ERROR;
     }
     return false;
   }
 
-  isTruthy(condition: IBase) {
-    if (condition.type() === BaseType.INTEGER) {
+  isTruthy(condition: Base) {
+    if (condition.type === BaseType.INTEGER) {
       if (condition.value !== 0) {
         return true;
       }
       return false;
     }
 
-    if (condition.type() === BaseType.BOOLEAN) {
+    if (condition.type === BaseType.BOOLEAN) {
       return condition.value;
     }
 
-    if (condition.type() === BaseType.NULL) {
+    if (condition.type === BaseType.NULL) {
       return false;
     }
 

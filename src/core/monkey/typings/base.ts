@@ -8,102 +8,77 @@ export enum BaseType {
   RETURN_VALUE = 'RETURN_VALUE',
   NULL = 'NULL',
   FUNCTION_CALL = 'FUNCTION_CALL',
+  ARRAY = 'ARRAY',
 }
 
-export interface IBase {
+export class Base {
   value: any;
-  type: () => BaseType;
-  inspect: () => void;
+  type: BaseType = BaseType.ERROR;
+  inspect: string = '';
 }
 
 export interface IBaseProp {
   value: any;
 }
 
-export class IntegerNode implements IBase {
-  value: Number;
+export class IntegerNode extends Base {
+  value: number;
+  type = BaseType.INTEGER;
+
   constructor(props: IBaseProp) {
+    super();
     this.value = props.value;
-  }
-
-  type() {
-    return BaseType.INTEGER;
-  }
-
-  inspect() {
-    console.log(`integer with value ${this.value}`);
+    this.inspect = `integer with value ${this.value}`;
   }
 }
 
-export class BooleanNode implements IBase {
+export class BooleanNode extends Base {
   value: Boolean;
+  type = BaseType.BOOLEAN;
+
   constructor(props: IBaseProp) {
+    super();
     this.value = props.value;
-  }
-
-  type() {
-    return BaseType.BOOLEAN;
-  }
-
-  inspect() {
-    console.log(`boolean with value ${this.value}`);
+    this.inspect = `integer with value ${this.value}`;
   }
 }
 
-export class ErrorNode implements IBase {
+export class ErrorNode extends Base {
   value: string;
+  type = BaseType.ERROR;
+
   constructor(props: IBaseProp) {
+    super();
     this.value = props.value;
-  }
-
-  type() {
-    return BaseType.ERROR;
-  }
-
-  inspect() {
-    console.log(`boolean with value ${this.value}`);
+    this.inspect = `error with value ${this.value}`;
   }
 }
 
-export class NullNode implements IBase {
+export class NullNode extends Base {
   value: null = null;
-
-  type() {
-    return BaseType.NULL;
-  }
-
-  inspect() {
-    console.log(`null`);
-  }
+  type = BaseType.NULL;
+  inspect = `null`;
 }
 
-export class StringNode implements IBase {
+export class StringNode extends Base {
   value: string;
+  type = BaseType.STRING;
+
   constructor(props: IBaseProp) {
+    super();
     this.value = props.value;
-  }
-
-  type() {
-    return BaseType.STRING;
-  }
-
-  inspect() {
-    console.log(`string with value ${this.value}`);
+    this.inspect = `string with value ${this.value}`;
   }
 }
 
-export class ReturnNode implements IBase {
+export class ReturnNode extends Base {
   value: any;
+  type = BaseType.RETURN_VALUE;
+
   constructor(props: IBaseProp) {
+    super();
     this.value = props.value;
-  }
-
-  type() {
-    return BaseType.RETURN_VALUE;
-  }
-
-  inspect() {
-    console.log(`return with value ${this.value}`);
+    this.inspect = `return with value ${this.value}`;
   }
 }
 
@@ -112,23 +87,19 @@ interface IFnCallNodeProps {
   blockStmt: BlockStatement;
   environment: Environment;
 }
-export class FnCallNode implements IFnCallNodeProps {
-  value: any = "fn call";
+export class FnCallNode extends Base implements IFnCallNodeProps {
+  value: any = 'function call';
+  type = BaseType.FUNCTION_CALL;
   identifiers: IdentifierExpression[] | ErrorExpression[];
   blockStmt: BlockStatement;
   environment: Environment;
+
   constructor(props: IFnCallNodeProps) {
+    super();
     this.identifiers = props.identifiers;
     this.blockStmt = props.blockStmt;
     this.environment = props.environment;
-  }
-
-  type() {
-    return BaseType.FUNCTION_CALL;
-  }
-
-  inspect() {
-    console.log(`function call`);
+    this.inspect = `function call`;
   }
 }
 
@@ -155,5 +126,20 @@ export class Environment {
   set(key: string, value: any) {
     this.valueMap.set(key, value);
     console.log(this.valueMap);
+  }
+}
+
+interface IArrayNodeProps {
+  elements: Base[];
+}
+export class ArrayNode extends Base {
+  type = BaseType.ARRAY;
+  elements: Base[] = [];
+  value = 'array';
+
+  constructor(props: IArrayNodeProps) {
+    super();
+    this.elements = props.elements;
+    this.inspect = `array with value ${this.value}`;
   }
 }

@@ -31,7 +31,9 @@ export enum TokenType {
   RIGHT_BRACE = 'RIGHT_BRACE', // }
   LEFT_PARENT = 'LEFT_PARENT', // (
   RIGHT_PARENT = 'RIGHT_PARENT', // )
-  
+  LEFT_BRACKET = 'LEFT_BRACKET', // [
+  RIGHT_BRACKET = 'RIGHT_BRACKET', // ]
+
   /** 保留字 关键字 */
   LET = 'LET',
   IF = 'IF',
@@ -69,6 +71,7 @@ export enum PrecedenceMap {
   PRODUCT = 4, // / *
   PREFIX = 5, // -X or !X
   CALL = 6, // fn()
+  KEY = 7, // a[1] 
 }
 
 export const Token2Precedence: Map<TokenType, PrecedenceMap> = new Map([
@@ -81,4 +84,5 @@ export const Token2Precedence: Map<TokenType, PrecedenceMap> = new Map([
  [TokenType.SLASH, PrecedenceMap.PRODUCT],
  [TokenType.ASTERISK, PrecedenceMap.PRODUCT],
  [TokenType.LEFT_PARENT, PrecedenceMap.CALL],
+ [TokenType.LEFT_BRACKET, PrecedenceMap.KEY],
 ]);

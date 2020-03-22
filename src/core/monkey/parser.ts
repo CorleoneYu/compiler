@@ -18,7 +18,9 @@ import {
   FunctionExpression,
   IInfixParseFns,
   CallExpression,
-  StringExpression
+  StringExpression,
+  ArrayExpression,
+  KeyExpression,
 } from "./typings";
 import { TokenType, PrecedenceMap, Token2Precedence } from "./constant";
 
@@ -83,6 +85,11 @@ export default class MonkeyParser {
     return exp;
   };
 
+  /**
+   * 解析函数定义时 参数列表
+   * 形如: a, b, c, d)
+   * 返回 参数列表数组 IdentifierExpression[]
+   */
   private parseFunctionParameters() {
     const parameters: IdentifierExpression[] = [];
     // curToken -> (
@@ -118,7 +125,7 @@ export default class MonkeyParser {
     return parameters;
   }
 
-  private parseFunctionLiteral = () => {
+  private parseFunctionExpression = () => {
     // curToken -> fn
     const token = this.curToken;
 
@@ -150,6 +157,13 @@ export default class MonkeyParser {
     });
   };
 
+  private parseArrayExpression = () => {
+    const token = this.curToken;
+    const elements = this.parseExpressionList(TokenType.RIGHT_BRACKET);
+    return new ArrayExpression({ token, elements});
+  } 
+
+
   prefixParseFns: Map<TokenType, () => Expression> = new Map([
     [TokenType.IDENTIFIER, this.parseIdentifier],
     [TokenType.INTEGER, this.parseIntegerExpression],
@@ -158,8 +172,9 @@ export default class MonkeyParser {
     [TokenType.TRUE, this.parseBoolean],
     [TokenType.FALSE, this.parseBoolean],
     [TokenType.LEFT_PARENT, this.parseGroupedExpression],
-    [TokenType.FN, this.parseFunctionLiteral],
-    [TokenType.STRING, this.parseStringExpression]
+    [TokenType.FN, this.parseFunctionExpression],
+    [TokenType.STRING, this.parseStringExpression],
+    [TokenType.LEFT_BRACKET, this.parseArrayExpression],
   ]);
 
   private parseInfixExpression = (left: Expression) => {
@@ -178,9 +193,16 @@ export default class MonkeyParser {
     });
   };
 
-  private parseCallArguments() {
+  /**
+   * 解析
+   * 1. 函数调用时参数值 形如 fn(a, b, c, d)
+   * 2. 解析数组参数值 形如 [a, b, c, d]
+   * @param end ) 或 ]
+   * @return Expression[]
+   */
+  private parseExpressionList(end: TokenType) {
     // curToken -> (
-    if (this.peekTokenIs(TokenType.RIGHT_PARENT)) {
+    if (this.peekTokenIs(end)) {
       this.nextToken();
       return [];
     }
@@ -197,11 +219,11 @@ export default class MonkeyParser {
       args.push(this.parseExpression(PrecedenceMap.LOWEST));
     }
 
-    if (!this.expectPeek(TokenType.RIGHT_PARENT)) {
+    if (!this.expectPeek(end)) {
       return [
         new ErrorExpression({
           token: this.curToken,
-          error: "parseCallArguments: missing a )"
+          error: "parseExpressionList: missing a )"
         })
       ];
     }
@@ -211,9 +233,23 @@ export default class MonkeyParser {
 
   private parseCallExpression = (fn: Expression) => {
     const token = this.curToken;
-    const args = this.parseCallArguments();
+    const args = this.parseExpressionList(TokenType.RIGHT_PARENT);
     return new CallExpression({ token, arguments: args, function: fn });
   };
+
+  private parseKeyExpression = (left: Expression) => {
+    const token = this.curToken;
+    this.nextToken();
+    const key = this.parseExpression(PrecedenceMap.LOWEST);
+    if (!this.expectPeek(TokenType.RIGHT_BRACKET)) {
+      return new ErrorExpression({
+        token: this.curToken,
+        error: "parseKeyExpression: missing a ]",
+      });
+    }
+
+    return new KeyExpression({left, key, token});
+  }
 
   infixParseFns: Map<TokenType, IInfixParseFns> = new Map([
     [TokenType.PLUS_SIGN, this.parseInfixExpression as IInfixParseFns],
@@ -224,7 +260,8 @@ export default class MonkeyParser {
     [TokenType.NOT_EQ, this.parseInfixExpression],
     [TokenType.LT, this.parseInfixExpression],
     [TokenType.GT, this.parseInfixExpression],
-    [TokenType.LEFT_PARENT, this.parseCallExpression]
+    [TokenType.LEFT_PARENT, this.parseCallExpression],
+    [TokenType.LEFT_BRACKET, this.parseKeyExpression],
   ]);
 
   private init() {

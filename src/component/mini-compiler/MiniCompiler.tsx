@@ -40,7 +40,7 @@ export default class MiniCompiler extends Component<IProps, IState> {
     // btnElm!.setAttribute('style', 'left: 1000px; bottom: 1000px;' );
     console.log("token", this.state.tokens);
     const program: Program = this.parser.parseProgram(this.state.tokens);
-    console.log("program", program);
+    console.log('program: ', program);
     this.evaluator.evalProgram(program);
   };
 

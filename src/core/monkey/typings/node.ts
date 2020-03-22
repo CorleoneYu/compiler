@@ -18,12 +18,20 @@ export enum NodeType {
   IDENTIFIER_EXP = 'IDENTIFIER_EXP',
   FUNCTION_EXP = 'FUNCTION_EXP', // 函数定义
   CALL_EXP = 'CALL_EXP',  // 函数调用
+  ARRAY_EXP = 'ARRAY_EXP', // 数组
+  KEY_EXP = 'KEY_EXP', // a[1] 等调用
 }
 
 export interface INodeProps {
   token: Token;
 }
 
+/**
+ * AST 的 节点
+ * 分为两大类
+ * 1. 表达式 Expression
+ * 2. 语句 Statement
+ */
 export class Node {
   token: Token;
   tokenLiteral = "";
@@ -37,12 +45,19 @@ export class Node {
   }
 }
 
+/**
+ * 语句类型
+ */
 export class Statement extends Node {
   statementNode() {
     return this;
   }
 }
 
+/**
+ * 声明语句
+ * 形如 let 变量名 = 表达式
+ */
 export interface ILetStatementProps extends INodeProps {
   identifier: IdentifierExpression;
   expression: Expression;
@@ -69,6 +84,12 @@ export interface IIfStatementProps extends INodeProps {
   consequence: BlockStatement;
   alternative?: BlockStatement;
 }
+/**
+ * if 语句
+ * 形如 if (表达式) {
+ *  语句块
+ * }
+ */
 export class IfStatement extends Statement {
   token: Token;
   condition: Expression;
@@ -92,6 +113,10 @@ export interface IAssignStatementProps extends INodeProps {
   identifier: IdentifierExpression;
   value: Expression;
 }
+/**
+ * 赋值语句
+ * 形如 变量名 = 表达式
+ */
 export class AssignStatement extends Statement {
   token: Token;
   identifier: IdentifierExpression;
@@ -109,6 +134,12 @@ export interface IWhileStatementProps extends INodeProps  {
   condition: Expression;
   body: BlockStatement;
 }
+/**
+ * 循环语句
+ * 形如 while(表达式) {
+ *  语句块
+ * }
+ */
 export class WhileStatement extends Statement {
   token: Token;
   body: BlockStatement;
@@ -125,6 +156,10 @@ export class WhileStatement extends Statement {
 export interface IReturnStatementProps extends INodeProps {
   expression: Expression;
 }
+/**
+ * return 语句
+ * 形如 return 表达式
+ */
 export class ReturnStatement extends Statement {
   token: Token;
   expression: Expression;
@@ -140,6 +175,9 @@ export class ReturnStatement extends Statement {
 export interface IExpressionStmt extends INodeProps {
   expression: Expression;
 }
+/**
+ * 表达式语句
+ */
 export class ExpressionStatement extends Statement {
   token: Token;
   expression: Expression;
@@ -155,6 +193,9 @@ export class ExpressionStatement extends Statement {
 export interface IBlockStmt extends INodeProps {
   statements: Statement[];
 }
+/**
+ * 语句块
+ */
 export class BlockStatement extends Statement {
   token: Token;
   statements: Statement[];
@@ -184,6 +225,9 @@ export class Expression extends Node {
 export interface IIdentifierExpression extends INodeProps {
   name: string;
 }
+/**
+ * 变量表达式
+ */
 export class IdentifierExpression extends Expression {
   token: Token;
   name: string;
@@ -199,6 +243,9 @@ export class IdentifierExpression extends Expression {
 export interface IIntegerProps extends INodeProps {
   value: number;
 }
+/**
+ * 整形表达式
+ */
 export class IntegerExpression extends Expression {
   token: Token;
   value: number;
@@ -214,6 +261,9 @@ export class IntegerExpression extends Expression {
 export interface IStringProps extends INodeProps {
   value: string;
 }
+/**
+ * 字符串表达式
+ */
 export class StringExpression extends Expression {
   token: Token;
   value: string;
@@ -249,6 +299,9 @@ export class PrefixExpression extends Expression {
 export interface IErrorProps extends INodeProps {
   error: string;
 }
+/**
+ * 错误表达式
+ */
 export class ErrorExpression extends Expression {
   error: string;
   constructor(props: IErrorProps) {
@@ -282,6 +335,9 @@ export class InfixExpression extends Expression {
 export interface IBooleanProps extends INodeProps {
   value: Boolean;
 }
+/**
+ * 布尔值表达式
+ */
 export class BooleanExpression extends Expression {
   token: Token;
   value: Boolean;
@@ -295,10 +351,12 @@ export class BooleanExpression extends Expression {
 }
 
 export interface IFunctionProps extends INodeProps {
-  token: Token;
   parameters: IdentifierExpression[] | ErrorExpression[];
   body: BlockStatement;
 }
+/**
+ * 函数表达式
+ */
 export class FunctionExpression extends Expression {
   token: Token;
   parameters: IdentifierExpression[] | ErrorExpression[];
@@ -317,10 +375,12 @@ export class FunctionExpression extends Expression {
 }
 
 export interface ICallProps extends INodeProps {
-  token: Token;
   function: Expression;
   arguments: Expression[];
 }
+/**
+ * 函数调用表达式
+ */
 export class CallExpression extends Expression {
   token: Token;
   function: IdentifierExpression;
@@ -331,6 +391,45 @@ export class CallExpression extends Expression {
     this.function = props.function as IdentifierExpression;
     this.arguments = props.arguments;
     this.nodeType = NodeType.CALL_EXP;
+  }
+}
+
+export interface IArrayProps extends INodeProps {
+  elements: Expression[];
+}
+/**
+ * 数组表达式
+ * 声明、赋值时可使用 let array = [a, b, c, d]
+ * token => [
+ * elements => a, b, c, d
+ */
+export class ArrayExpression extends Expression {
+  token: Token;
+  elements: Expression[];
+  constructor(props: IArrayProps) {
+    super(props);
+    this.token = props.token;
+    this.elements = props.elements;
+    this.nodeType = NodeType.ARRAY_EXP;
+  }
+}
+
+export interface IKeyProps extends INodeProps {
+  left: Expression;
+  key: Expression;
+}
+/**
+ * key 取值表达式
+ * 形如: a[1] a[fn()] a[b]
+ */
+export class KeyExpression extends Expression {
+  left: Expression;
+  key: Expression;
+  constructor(props: IKeyProps) {
+    super(props);
+    this.left = props.left;
+    this.key = props.key;
+    this.nodeType = NodeType.KEY_EXP;
   }
 }
 
