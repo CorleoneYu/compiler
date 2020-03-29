@@ -1,18 +1,13 @@
-import React from "react";
-import "./App.css";
-import Layout from './component/layout'
+import React from 'react';
+import Layout from './component/layout';
+import './worker/index';
 
 const App: React.FC = () => {
   return (
     <div className="App">
-      <Layout/>
+      <Layout />
     </div>
   );
 };
 
 export default App;
-
-
-// "start": "react-scripts start",
-// "build": "react-scripts build",
-// "test": "react-scripts test",
