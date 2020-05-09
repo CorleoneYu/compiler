@@ -9,3 +9,4 @@ ctx.onmessage =  handleMessage;
 ctx.postMessage('子进程');
 
 export default null as any;
+
