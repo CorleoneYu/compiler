@@ -13,7 +13,7 @@ import MonkeyEvaluator from "../../core/monkey/evaluator";
 import * as Styles from "./style";
 
 /** antd */
-import { Input, Button, Popover, Drawer } from "antd";
+import { Input, Button, Popover, Drawer, Modal } from "antd";
 import { TokenType } from "../../core/monkey/constant";
 const { TextArea } = Input;
 
@@ -38,10 +38,18 @@ export default class MiniCompiler extends Component<IProps, IState> {
   private parse = (e: React.MouseEvent<Element>) => {
     // const btnElm = document.querySelector("[data-selector=button]");
     // btnElm!.setAttribute('style', 'left: 1000px; bottom: 1000px;' );
-    console.log("token", this.state.tokens);
-    const program: Program = this.parser.parseProgram(this.state.tokens);
-    console.log('program: ', program);
-    this.evaluator.evalProgram(program);
+    try {
+      const program: Program = this.parser.parseProgram(this.state.tokens);
+      console.log('program: ', program);
+      this.evaluator.evalProgram(program);
+    } catch (e) {
+      console.log('error', e);
+      Modal.warning({
+        title: '代码运行出错哟',
+        content: '请修改代码以正确运行～'
+      })
+    }
+    
   };
 
   private onTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
