@@ -40,14 +40,14 @@
 支持：
 
 1. 操作符： - + / * == != ! < >
-2. 界符： , ; { } ( )
-3. 保留字: let if else fn false true return
+2. 界符： , ; { } ( ) [ ]
+3. 保留字: let if else fn false true return while
 
 ### 语法分析
 
 支持：
 
-1. 表达式类型：error integer boolean string null 前序表达式 中序表达式 fn表达式 fnCall表达式
+1. 表达式类型：error integer boolean string null 数组 类对象 前序表达式 中序表达式 fn表达式 fnCall表达式
 2. 语句类型：let声明语句 赋值语句 return语句 表达式语句 块级语句 if-else语句 while语句
 
 ```javascript
@@ -60,6 +60,7 @@
 
 // 3. 中序表达式 integer
 1 + 1
+1 + 2 * (3 + 4)
 
 // 4. let声明语句 fn表达式 fnCall表达式（函数调用）
 let add = fn(a, b) {
@@ -90,6 +91,16 @@ while(count > 0) {
     turnRight();
     count = count -1;
 }
+
+// 7. 数组
+let arr = [1, 2, 3, 4];
+arr[0]; // key取值 1
+
+// 8. 类对象
+let person = {
+    "name": "lky"
+};
+person["name"]; // key取值 lky
 ```
 
 ### 执行
@@ -127,7 +138,7 @@ while(count > 0) {
 
 难点：
 
-1. 程序执行中canMvoe()结果需返回给程序执行使用
+1. 程序执行中canMove()结果需返回给程序执行使用
 2. 任务执行 异步调度
 
 ![效果](https://chenweilin.xin/blogImg/1572966259738Q2.gif)

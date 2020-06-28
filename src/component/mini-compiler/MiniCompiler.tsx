@@ -39,6 +39,7 @@ export default class MiniCompiler extends Component<IProps, IState> {
     // const btnElm = document.querySelector("[data-selector=button]");
     // btnElm!.setAttribute('style', 'left: 1000px; bottom: 1000px;' );
     try {
+      console.log('tokens', this.state.tokens);
       const program: Program = this.parser.parseProgram(this.state.tokens);
       console.log('program: ', program);
       this.evaluator.evalProgram(program);
@@ -53,7 +54,6 @@ export default class MiniCompiler extends Component<IProps, IState> {
   };
 
   private onTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    console.log("onTextChange", e.target.value);
     const tokens = this.lexer.lexing(e.target.value);
     this.setState({
       tokens,
