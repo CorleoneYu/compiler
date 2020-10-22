@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { UNION_SIZE } from '../../constant';
-import { Direction } from '../../typings';
+import { UNION_SIZE } from '../constant';
+import { Direction } from '../../../typings';
 
 export const GameUIContainer = styled.div`
   background: #eee;

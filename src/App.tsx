@@ -1,12 +1,12 @@
 import React from 'react';
-import Layout from './component/layout';
+import Router from './component/router';
 import './worker/index';
 import './core/normal'
 
 const App: React.FC = () => {
   return (
     <div className="App">
-      <Layout />
+      <Router />
     </div>
   );
 };

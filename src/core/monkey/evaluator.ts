@@ -36,7 +36,7 @@ import {
   MapExpression,
   MapNode,
 } from "./typings";
-import { implementFns } from '../../constant';
+import { implementFns } from '../../component/tank-game/constant';
 
 export default class MonkeyEvaluator {
   env: Environment = new Environment(null);

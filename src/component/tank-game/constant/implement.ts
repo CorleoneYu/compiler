@@ -1,5 +1,5 @@
 import { eventEmitter, EVENTS } from './event';
-import { IImplementFn, Tank } from '../typings';
+import { IImplementFn, Tank } from '../../../typings';
 import { cloneDeep } from 'lodash-es';
 
 let tank: Tank | null = null;

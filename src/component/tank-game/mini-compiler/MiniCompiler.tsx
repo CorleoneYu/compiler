@@ -2,19 +2,19 @@ import React, { Component } from "react";
 import classnames from "classnames";
 
 /** types */
-import { Token, Program } from "../../core/monkey/typings";
+import { Token, Program } from "../../../core/monkey/typings";
 
 /** helper */
-import MonkeyLexer from "../../core/monkey/lexer";
-import MonkeyParser from "../../core/monkey/parser";
-import MonkeyEvaluator from "../../core/monkey/evaluator";
+import MonkeyLexer from "../../../core/monkey/lexer";
+import MonkeyParser from "../../../core/monkey/parser";
+import MonkeyEvaluator from "../../../core/monkey/evaluator";
 
 /** styles */
 import * as Styles from "./style";
 
 /** antd */
 import { Input, Button, Popover, Drawer, Modal } from "antd";
-import { TokenType } from "../../core/monkey/constant";
+import { TokenType } from "../../../core/monkey/constant";
 const { TextArea } = Input;
 
 type IProps = {

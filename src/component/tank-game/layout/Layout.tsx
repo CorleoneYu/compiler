@@ -6,9 +6,8 @@ import {
   Route,
   Redirect
 } from "react-router-dom";
-import { config } from "../../constant";
+import { config } from "../constant";
 /* component */
-import PlusTimes from "../plus-times";
 import Game from "../game";
 
 /* antd */
@@ -21,7 +20,7 @@ export default class extends Component {
       <BrowserRouter>
         <Layout>
           <Header className="header">
-            <h1 className="cwhite">少儿编程平台</h1>
+            <h1 style={{ color: 'white' }}>少儿编程平台</h1>
           </Header>
           <Layout style={{ height: "calc(100vh - 64px)", overflow: "hidden" }}>
             <Sider width={200} style={{ background: "#fff" }}>
@@ -30,12 +29,6 @@ export default class extends Component {
                 defaultSelectedKeys={["game-link-0"]}
                 style={{ height: "100%", borderRight: 0 }}
               >
-                {/* <Menu.Item key="1">
-                  <NavLink to="/plus-times">
-                    <Icon type="user" />
-                    加乘编译器
-                  </NavLink>
-                </Menu.Item> */}
                 {config.map(item => {
                   return (
                     <Menu.Item key={`game-link-${item.level}`}>
@@ -57,7 +50,6 @@ export default class extends Component {
                 }}
               >
                 <Switch>
-                  <Route path="/plus-times" component={PlusTimes} />
                   <Route path="/mini-compiler/:level" component={Game} />
                   <Redirect from="*" to="/mini-compiler/0" />
                 </Switch>
