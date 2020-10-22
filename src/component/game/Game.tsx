@@ -12,8 +12,6 @@ import Executor from './executor';
 
 import * as Style from "./style";
 
-// import '../../core/sql/parser/test.ts';
-
 type IGameProps = {
   level: string;
 };
