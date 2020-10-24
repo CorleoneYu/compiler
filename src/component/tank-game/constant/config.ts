@@ -1,4 +1,4 @@
-import { GameConfig, Direction } from "../../../typings";
+import { GameConfig, Direction } from "../typings";
 
 export const config: GameConfig[] = [
   new GameConfig({

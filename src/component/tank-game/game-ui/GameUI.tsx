@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import classnames from "classnames";
 
 import { UNION_SIZE } from "../constant";
-import { ImgType, ISize, ITankUI } from "../../../typings";
+import { ImgType, ISize, ITankUI } from "../typings";
 
 import { ReactComponent as TankIcon } from "./image/tank.svg";
 import { ReactComponent as Wall } from "./image/wall.svg";

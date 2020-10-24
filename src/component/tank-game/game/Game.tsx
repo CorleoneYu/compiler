@@ -6,7 +6,7 @@ import GameUI from '../game-ui';
 import { Modal, notification, Button } from 'antd'
 
 import { config, eventEmitter, EVENTS } from "../constant";
-import { GameConfig, defaultGameConfig, Tank, ITankUI, } from '../../../typings';
+import { GameConfig, defaultGameConfig, Tank, ITankUI, } from '../typings';
 import { RouteComponentProps } from "react-router-dom";
 import Executor from './executor';
 
