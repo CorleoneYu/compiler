@@ -13,8 +13,8 @@ const Router = () => {
   return (
     <BrowserRouter>
       <Switch>
-        <Route path="/regular" component={Regular}></Route>
-        <Route path="/plus-time-compiler" component={PlusTimes}></Route>
+        <Route path="/regular" component={Regular} />
+        <Route path="/plus-time-compiler" component={PlusTimes} />
         <Route path="/mini-compiler/:level" component={TankGame} />
         <Redirect from="*" to="/regular" />
       </Switch>

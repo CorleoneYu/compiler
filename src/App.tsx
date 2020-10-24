@@ -1,7 +1,8 @@
 import React from 'react';
 import Router from './component/router';
-import './worker/index';
-import './core/normal'
+
+// worker 线程
+// import './worker/index';
 
 const App: React.FC = () => {
   return (
