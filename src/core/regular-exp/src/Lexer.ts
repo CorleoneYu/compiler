@@ -5,11 +5,11 @@ import specialTokenTypeMap from './constant/tokenTypeMap';
 
 class Lexer {
     private specialTokenTypeMap: Map<string, TokenType> = specialTokenTypeMap; // 特殊字符对应的 tokenType 表
-    private inQuoted: boolean = false; // 是否在双引号中
-    private sawEsc: boolean = false; // 是否读到转义字符 /
     private input: string = ''; // 解析的字符串
     private ch: string = ''; // 当前在读的字符
     private readIndex: number = 0; // 当前在读的 index
+    private inQuoted: boolean = false; // 是否在双引号中
+    private isAntiSlant = false; // 是否在反斜杆里 转义符
 
     public lexer(input: string) {
         this.init();
@@ -50,6 +50,24 @@ class Lexer {
     private nextToken(): Token {
         let tokenType = TokenType.NORMAL;
         const ch = this.ch;
+
+        if (this.isAntiSlant) {
+            // 反斜杆中 都当作普通字符处理
+            this.isAntiSlant = false;
+            this.readChar();
+            return new Token({
+                tokenType: TokenType.NORMAL,
+                value: ch,
+            });
+        }
+
+        if (ch === '\\') {
+            // 如果是反斜杆
+            this.isAntiSlant = true;
+            this.readChar();
+            return this.nextToken();
+        }
+
         if (this.specialTokenTypeMap.has(ch)) {
             tokenType = this.specialTokenTypeMap.get(ch)!;
         }

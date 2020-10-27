@@ -12,8 +12,7 @@ const initTokenTypeMap = () => {
         tokenTypeMap.set(char, specialCharTokenTypes[index]);
     });
     tokenTypeMap.set('', TokenType.EOF);
-
-    console.log('tokenTypeMap', tokenTypeMap);
+    
     return tokenTypeMap;
 };
 

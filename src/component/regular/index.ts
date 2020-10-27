@@ -1,2 +1,2 @@
-import Regular from './Regular';
+import Regular from './layout';
 export default Regular;
