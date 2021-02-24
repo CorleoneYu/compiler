@@ -10,9 +10,9 @@ export default class MonkeyLexer {
   private get peekChar() { // ch下一个字符
     if (this.readPosition >= this.sourceCode.length) {
       return '';
-    } else {
-      return this.sourceCode[this.readPosition];
     }
+
+    return this.sourceCode[this.readPosition];
   }
 
   private init() {

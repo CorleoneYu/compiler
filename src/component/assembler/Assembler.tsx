@@ -1,9 +1,11 @@
 import React, { useCallback, useState } from 'react';
 import { Input, Button, Layout } from 'antd';
+import Parser from '../../core/assembler';
 import { AssemblerBox } from './style';
 
 const Assembler = () => {
     const [input, changeInput] = useState<string>('');
+    const [result, changeResult] = useState<string>('');
     const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         if (!event.target.files || !event.target.files[0]) {
             return;
@@ -22,8 +24,10 @@ const Assembler = () => {
         reader.readAsText(file);
     }, []);
 
-    const parser = useCallback(() => {
-        console.log('input', input);
+    const handleParser = useCallback(() => {
+        const parser = new Parser();
+        const res = parser.parse(input);
+        changeResult(res);
     }, [input]);
 
     return (
@@ -41,7 +45,7 @@ const Assembler = () => {
                 <AssemblerBox>
                     <div className="header operate">
                         <input type="file" onChange={handleChange} />
-                        <Button type="primary" className="parser-btn" onClick={parser}>
+                        <Button type="primary" className="parser-btn" onClick={handleParser}>
                             编译
                         </Button>
                     </div>
@@ -50,7 +54,7 @@ const Assembler = () => {
                             <Input.TextArea className="file-content" rows={20} disabled value={input} />
                         </div>
                         <div className="content right">
-                            <Input.TextArea className="file-content" rows={20} disabled value={input} />
+                            <Input.TextArea className="file-content" rows={20} value={result} />
                         </div>
                     </div>
                 </AssemblerBox>
