@@ -17,28 +17,15 @@ class Parser {
     private pc = -1; // 指令计数器，A C 指令 +1
     private ramAddress = 16; // 下一个变量存储的地址
 
-    // jump 域集合
-    private jSet = {
-        JGT: '001',
-        JEQ: '010',
-        JGE: '011',
-        JLT: '100',
-        JNE: '101',
-        JLE: '110',
-        JMP: '111',
-    };
-
     public parse(input: string) {
         this.instructions = this.check(input.split('\n'));
-        console.log('parse', this.instructions);
 
         // 首次解析收集符号
         this.pre();
 
         // 解析指令
-        const binary = this.advance();
+        const binary = this._parse();
 
-        console.log(binary);
         return binary;
     }
 
@@ -46,6 +33,9 @@ class Parser {
         return instructions.filter((instruction) => !this.isInvalid(instruction));
     }
 
+    /**
+     * 预解析：收集 符号变量 存储于 symbolTable
+     */
     private pre() {
         this.instructions = this.instructions.map(current => {
             // 如果指令右边有注释，则删除
@@ -69,7 +59,12 @@ class Parser {
         })
     }
 
-    private advance() {
+    /**
+     * 主流程：逐句解释 汇编语句
+     * 1. A 指令
+     * 2. C 指令
+     */
+    private _parse() {
         let binaryOut = '';
         while (this.hasMore()) {
             const current = this.instructions.shift()!;
