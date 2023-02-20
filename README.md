@@ -109,7 +109,7 @@ person["name"]; // key取值 lky
 1. 程序执行中canMove()结果需返回给程序执行使用
 2. 任务执行 异步调度
 
-<!-- ![效果图](https://chenweilin.xin/blogImg/1572966259738Q2.gif) -->
+![效果图](https://github.com/CorleoneYu/compiler/blob/master/program-game.gif)
 
 
 ## sql 解析器
@@ -118,6 +118,7 @@ Todo...
 
 ## 正则表达式解析器
 
+![效果图](https://github.com/CorleoneYu/compiler/blob/master/regular.jpg)
 
 
 ## 学习
